@@ -7,10 +7,26 @@ import loginScreen from './Screens/LoginScreen/LoginScreen';
 import Register from './Screens/RegisterScreen/Register';
 import Forgetpass from './Screens/Forgetpass/Forgetpass';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AppLoading from 'expo-app-loading';
+import {
+  useFonts,
+  Montserrat_400Regular,
+  Montserrat_700Bold,
+} from '@expo-google-fonts/montserrat';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  const [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
+
   return (
     <GestureHandlerRootView>
     <NavigationContainer>

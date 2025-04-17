@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 // import { SvgUri } from 'react-native-svg';
 
 const loginScreen = () => {
@@ -11,6 +12,11 @@ const loginScreen = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [passView, setPassView] = useState(true)
+    const [eyeColor, setEyeColor] = useState("#4F8EF7")
+
+    console.log(email, password);
+    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,17 +33,22 @@ const loginScreen = () => {
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}/>
-            <TextInput
-                keyboardType='default'
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                secureTextEntry= {true}
-                onChangeText={setPassword}/>
+            <View>
+                              <TextInput
+                                  keyboardType='default'
+                                  style={styles.input}
+                                  placeholder="Password"
+                                  value={password}
+                                  secureTextEntry= {passView}
+                                  onChangeText={setPassword}/>
+                                  <TouchableOpacity style={{position:"absolute", top:"25%", left:"85%"}}>
+                                    <Icon onPress={()=>{setPassView(!passView); passView? setEyeColor("black"): setEyeColor("#4F8EF7")}} name="eye" size={30} color={eyeColor}/>
+                                  </TouchableOpacity>
+                              </View>
         </View>
         <TouchableOpacity style={{width:"85%", alignItems:"flex-end"}}><Text style={styles.links} onPress={()=> navigation.navigate("ForgoetPass")}>Forget password?</Text></TouchableOpacity>
 
-        <TouchableOpacity style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{color:"white", fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
+        <TouchableOpacity style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{color:"white", fontFamily: 'Montserrat_400Regular', fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
 
         <TouchableOpacity style={{flexDirection:"row",}}><Text>New on our platform? </Text><Text style={styles.links} onPress={()=> navigation.navigate("Register")}>Create an account</Text></TouchableOpacity>
     </SafeAreaView>
@@ -69,12 +80,14 @@ const styles = StyleSheet.create({
     marginBottom: 5
   },
   logoText:{
+    fontFamily: 'Montserrat_400Regular',
     fontSize: 20,
     fontWeight: '600',
     letterSpacing: 2
   },
   welcomeText:{
-    fontSize: 25
+    fontFamily: 'Montserrat_700Bold',
+    fontSize: 20
   },
   input: {
     height: 40,
@@ -86,6 +99,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   links:{
+    fontFamily: 'Montserrat_400Regular',
     color: "#7367f0",
     alignItems:"flex-end",
     justifyContent:'flex-end',
