@@ -14,6 +14,8 @@ const Forgetpass = () => {
       const [passView, setPassView] = useState(true)
       const [eyeColor, setEyeColor] = useState("#4F8EF7")
 
+      
+
   return (
     <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView behavior={Platform.OS==="android" ? "height" : "padding"}></KeyboardAvoidingView>
