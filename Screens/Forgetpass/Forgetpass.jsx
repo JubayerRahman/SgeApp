@@ -1,18 +1,27 @@
-import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform } from 'react-native'
+import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 const Forgetpass = () => {
 
   const navigation = useNavigation();
       const [email, setEmail] = useState('');
-      const [password, setPassword] = useState('');
-      const [passView, setPassView] = useState(true)
-      const [eyeColor, setEyeColor] = useState("#4F8EF7")
+
+      const SendingNewPassFunction = ()=>{
+        if (email === "") {
+          Alert.alert("Give me your email first")
+        }
+        else{
+          axios.post("https://dev.shabujglobal.org/api/reset-password", {email})
+          .then(res=> Alert.alert(res?.data?.message))
+          .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong, babe 💔"))
+        }
+      }
 
       
 
@@ -33,7 +42,7 @@ const Forgetpass = () => {
                     onChangeText={setEmail}/>
             </View>
     
-            <TouchableOpacity style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{fontFamily: 'Montserrat_400Regular', color:"white", fontSize:17, width:"80%", textAlign:"center" }}>Send Temporary Passwors</Text></TouchableOpacity>
+            <TouchableOpacity onPress={SendingNewPassFunction} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{fontFamily: 'Montserrat_400Regular', color:"white", fontSize:17, width:"80%", textAlign:"center" }}>Send Temporary Passwors</Text></TouchableOpacity>
             <TouchableOpacity style={{width:"85%", alignItems:"center"}}><Text style={styles.links} onPress={()=> navigation.navigate("Home")}> {"<"} Back to Login</Text></TouchableOpacity>
         </SafeAreaView>
   )

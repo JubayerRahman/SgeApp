@@ -1,10 +1,11 @@
-import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform } from 'react-native'
+import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 // import { SvgUri } from 'react-native-svg';
 
 const loginScreen = () => {
@@ -15,7 +16,29 @@ const loginScreen = () => {
     const [passView, setPassView] = useState(true)
     const [eyeColor, setEyeColor] = useState("#4F8EF7")
 
-    console.log(email, password);
+
+    const LoginFunc = ()=>{
+
+      if (email === "" || password === "") {
+        Alert.alert("Fill all the fields")
+      }
+      else{
+        const loginInfo = {email, password}
+
+        axios.post("https://dev.shabujglobal.org/api/login", loginInfo)
+        .then(res=>{
+          if(res.data){
+            Alert.alert("Your Token: ", res?.data?.data?.accessToken)
+          }
+        })
+        .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong, babe 💔"))
+        console.log(loginInfo);
+      }
+      
+
+      
+
+    }
     
 
   return (
@@ -34,21 +57,21 @@ const loginScreen = () => {
                 value={email}
                 onChangeText={setEmail}/>
             <View>
-                              <TextInput
-                                  keyboardType='default'
-                                  style={styles.input}
-                                  placeholder="Password"
-                                  value={password}
-                                  secureTextEntry= {passView}
-                                  onChangeText={setPassword}/>
-                                  <TouchableOpacity style={{position:"absolute", top:"25%", left:"85%"}}>
-                                    <Icon onPress={()=>{setPassView(!passView); passView? setEyeColor("black"): setEyeColor("#4F8EF7")}} name="eye" size={30} color={eyeColor}/>
-                                  </TouchableOpacity>
-                              </View>
+            <TextInput
+                keyboardType='default'
+                style={styles.input}
+                placeholder="Password"
+                value={password}
+                secureTextEntry= {passView}
+                onChangeText={setPassword}/>
+                <TouchableOpacity style={{position:"absolute", top:"25%", left:"85%"}}>
+                  <Icon onPress={()=>{setPassView(!passView); passView? setEyeColor("black"): setEyeColor("#4F8EF7")}} name="eye" size={30} color={eyeColor}/>
+                </TouchableOpacity>
+            </View>
         </View>
         <TouchableOpacity style={{width:"85%", alignItems:"flex-end"}}><Text style={styles.links} onPress={()=> navigation.navigate("ForgoetPass")}>Forget password?</Text></TouchableOpacity>
 
-        <TouchableOpacity style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{color:"white", fontFamily: 'Montserrat_400Regular', fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
+        <TouchableOpacity onPress={LoginFunc} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{color:"white", fontFamily: 'Montserrat_400Regular', fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
 
         <TouchableOpacity style={{flexDirection:"row",}}><Text>New on our platform? </Text><Text style={styles.links} onPress={()=> navigation.navigate("Register")}>Create an account</Text></TouchableOpacity>
     </SafeAreaView>

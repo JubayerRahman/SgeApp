@@ -1,11 +1,13 @@
-import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native'
+import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, ScrollView, Alert, ActivityIndicator } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { SelectList } from 'react-native-dropdown-select-list';
+import { MultipleSelectList, SelectList } from 'react-native-dropdown-select-list';
+import axios from 'axios';
+// import { Axios } from 'axios';
 
 const Register = () => {
 
@@ -23,7 +25,7 @@ const Register = () => {
       const [password, setPassword] = useState('');
       const [Confirmpassword, setConfirmpassword] = useState('');
       const [SlectdCountry, setSelectedCountry] = useState("")
-      const [RecruitCountry, setRecruitCountry] = useState("")
+      const [RecruitCountry, setRecruitCountry] = useState([])
       const [passView, setPassView] = useState(true)
       const [passView2, setPassView2] = useState(true)
       const [eyeColor, setEyeColor] = useState("#4F8EF7")
@@ -227,6 +229,31 @@ const Register = () => {
         { key: 194, value: "Zimbabwe" }
       ];
 
+      const signUpFunc =()=>{
+        if(Firstname ==="", Lastname==="", MobileNumber ==="", WhatsAppNumber ==="", email ==="", companyName ==="",Website ==="", Address ==="",PostCode ==="",City ==="", password ==="", Confirmpassword ==="", SlectdCountry ==="", RecruitCountry ==="", Confirmpassword===""){
+          Alert.alert("Fill All the fileds first")
+        }
+        else{
+          const Allinfo = {"firstName":Firstname, "lastName": Lastname, "mobileNumber":MobileNumber, "whatsappNumber":WhatsAppNumber, email, companyName,"website":Website, "address":Address, "postCode":PostCode, "city":City, password, "country":SlectdCountry,"recruitCountries": RecruitCountry, "confirmPassword": Confirmpassword}
+  
+          axios.post("https://dev.shabujglobal.org/api/register", Allinfo, {timeout: 5000})
+          .then(res=>{
+            console.log(res.data)
+            if (res.data.message === "User Registration Successful") {
+              Alert.alert("User Registration Successful")
+            }
+          })
+          .catch(error=> {
+            const msg = error?.response?.data?.message || error?.message || "Something went wrong, babe 💔";
+            Alert.alert( msg);
+          })
+          console.log(Allinfo);
+          
+          
+        }
+        
+      }
+
   return (
     <ScrollView>
       <SafeAreaView style={styles.container}>
@@ -315,32 +342,33 @@ const Register = () => {
                       keyboardType='default'
                       style={styles.input}
                       placeholder="Enter Post Code"
-                      value={Address}
+                      value={PostCode}
                       onChangeText={setPostCode}/>
                   <SelectList
                     style={styles.input}
                     setSelected={(val)=>setSelectedCountry(val)}
                     data={countriesList}
-                    save='Value'
+                    save='value'
                     placeholder='Select your country'
                   />
                   <TextInput
                       keyboardType='default'
                       style={styles.input}
                       placeholder="Enter City"
-                      value={Address}
+                      value={City}
                       onChangeText={setCity}/>
                   <Text style={{fontFamily: 'Montserrat_700Bold', marginTop:20, fontSize:20, fontWeight:"600", letterSpacing:1}}>Country you recruit for *</Text>
-                  <SelectList
+                  <MultipleSelectList
                     style={styles.input}
                     setSelected={(val)=>setRecruitCountry(val)}
                     data={countriesList}
-                    save='Value'
+                    save='value'
                     placeholder='Select recruit country'
                   />
               </View>
       
-              <TouchableOpacity onPress={()=> Alert.alert("App is underconstruction")} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{fontFamily: 'Montserrat_400Regular', color:"white", fontSize:25, width:"80%", textAlign:"center" }}>Sign In</Text></TouchableOpacity>
+              <TouchableOpacity onPress={signUpFunc} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10,  justifyContent:"center", width:"90%"}}>
+                <Text style={{fontFamily: 'Montserrat_400Regular', color:"white", fontSize:25, width:"auto", textAlign:"center" }}>Sign In</Text></TouchableOpacity>
       
               <TouchableOpacity style={{flexDirection:"row", marginBottom:20}}><Text style={{fontFamily: 'Montserrat_400Regular',}}>Already have an account? </Text><Text style={styles.links} onPress={()=> navigation.navigate("Home")}>Sign in instead</Text></TouchableOpacity>
           </SafeAreaView>
