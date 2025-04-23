@@ -1,55 +1,69 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import loginScreen from './Screens/LoginScreen/LoginScreen';
 import Register from './Screens/RegisterScreen/Register';
 import Forgetpass from './Screens/Forgetpass/Forgetpass';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import {
   useFonts,
   Montserrat_400Regular,
   Montserrat_700Bold,
 } from '@expo-google-fonts/montserrat';
+import { useCallback, useEffect, useState } from 'react';
+import Dashboard from './Screens/Dashboard/Dashboard';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     Montserrat_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Prevent the splash screen from auto-hiding
+        await SplashScreen.preventAutoHideAsync();
+        // You can load other resources here if needed
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded && appIsReady) {
+      // Hide the splash screen once the app is ready
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, appIsReady]);
+
+  if (!fontsLoaded || !appIsReady) {
+    return null; // Render nothing while resources are loading
   }
 
   return (
-    <GestureHandlerRootView>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
-        <Stack.Screen name="Home" component={loginScreen} />
-        <Stack.Screen name="Login" component={loginScreen} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="ForgoetPass" component={Forgetpass} />
-      </Stack.Navigator>
-      <StatusBar style='auto'/>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Dashboard" screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Home" component={loginScreen} />
+          <Stack.Screen name="Login" component={loginScreen} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="ForgoetPass" component={Forgetpass} />
+          <Stack.Screen name="Dashboard" component={Dashboard} />
+        </Stack.Navigator>
+        <StatusBar style="dark" />
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  MainText:{
-    fontSize:50
-  }
-});

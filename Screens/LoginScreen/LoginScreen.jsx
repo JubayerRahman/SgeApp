@@ -28,7 +28,8 @@ const loginScreen = () => {
         axios.post("https://dev.shabujglobal.org/api/login", loginInfo)
         .then(res=>{
           if(res.data){
-            Alert.alert("Your Token: ", res?.data?.data?.accessToken)
+            // Alert.alert("Your Token: ", res?.data?.data?.accessToken)
+            navigation.navigate("Dashboard")
           }
         })
         .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong, babe 💔"))

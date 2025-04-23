@@ -2,6 +2,7 @@
   "expo": {
     "name": "sgeApp",
     "slug": "sgeApp",
+    "scheme": "sgeapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,13 +20,19 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jobayerrahmanohee.sgeApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "188d981f-259d-4c95-8fa6-e69eaba7e5f5"
+      }
+    }
   }
 }
