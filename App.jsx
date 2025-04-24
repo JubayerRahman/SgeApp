@@ -55,14 +55,14 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Dashboard" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={loginScreen} />
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Register" component={Register} />
           <Stack.Screen name="ForgoetPass" component={Forgetpass} />
           <Stack.Screen name="Dashboard" component={Dashboard} />
         </Stack.Navigator>
-        <StatusBar style="dark" />
+        <StatusBar style="dark" backgroundColor='white'/>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
