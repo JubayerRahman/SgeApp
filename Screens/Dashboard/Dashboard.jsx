@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, BackHandler } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer'
 import DashboardHome from './DashboardHome/DashboardHome'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -30,10 +30,30 @@ import AllNotices from '../AllNotices/AllNotices';
 import AddNotices from './AddNotices/AddNotices';
 import User from '../User/User';
 import Email from '../Email/Email';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const Dashboard = () => {
   const Drawer = createDrawerNavigator();
+  const [userName, setUserName] = useState()
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const name = await AsyncStorage.getItem('name');
+        if (name !== null) {
+          setUserName(name);
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+  
+    fetchUserName();
+  }, []);
+  
+  console.log(userName);
 
   function CustomDrawerContent({ navigation }) {
   
@@ -44,6 +64,8 @@ const Dashboard = () => {
     const [tasksExpanded, setTasksExpanded] = useState(false)
     const [noticesExpanded, setNoticesExpanded] = useState(false)
     const currentRoute = navigation.getState().routes[navigation.getState().index].name;
+
+    
 
 
     return (
@@ -401,8 +423,9 @@ const Dashboard = () => {
     drawerContent={(props) => <CustomDrawerContent {...props} />} 
     initialRouteName='Dashboard' screenOptions={{
       headerRight:()=>(
-        <TouchableOpacity style={{marginRight:20}}>
+        <TouchableOpacity style={{marginRight:20, flexDirection:"row", justifyContent:"center", gap:5}}>
             <AntDesign name="bells" size={24} color="#000" />
+            <Text style={{fontFamily:"Montserrat_400Regular"}}>{userName}</Text>
           </TouchableOpacity>
       )
     }}>

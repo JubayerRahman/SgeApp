@@ -6,6 +6,7 @@ import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { SvgUri } from 'react-native-svg';
 
 const loginScreen = () => {
@@ -29,10 +30,18 @@ const loginScreen = () => {
         .then(res=>{
           if(res.data){
             // Alert.alert("Your Token: ", res?.data?.data?.accessToken)
+            const email = res?.data?.data?.userData?.email
+            const name = res?.data?.data?.userData?.full_name
+            const accesstoken = res?.data?.data?.accessToken
+            
+            // Saving Data into device
+            AsyncStorage.setItem('name', name)
+            AsyncStorage.setItem('email', email)
+            AsyncStorage.setItem('accesstoken', accesstoken)
             navigation.navigate("Dashboard")
           }
         })
-        .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong, babe 💔"))
+        .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong"))
         console.log(loginInfo);
       }
       

@@ -14,6 +14,7 @@ import {
 } from '@expo-google-fonts/montserrat';
 import { useCallback, useEffect, useState } from 'react';
 import Dashboard from './Screens/Dashboard/Dashboard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,6 +25,26 @@ export default function App() {
   });
 
   const [appIsReady, setAppIsReady] = useState(false);
+
+  const [userName, setUserName] = useState()
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const name = await AsyncStorage.getItem('name');
+        if (name !== null) {
+          setUserName(name);
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+  
+    fetchUserName();
+  }, []);
+
+  console.log("I am App Component: ",userName);
+  
 
   useEffect(() => {
     async function prepare() {
@@ -55,7 +76,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName={userName === ""? "Home" : "Dashboard"} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={loginScreen} />
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Register" component={Register} />
