@@ -76,7 +76,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName={userName === ""? "Home" : "Dashboard"} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName={userName === undefined ? "Home" : "Dashboard"} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={loginScreen} />
           <Stack.Screen name="Login" component={loginScreen} />
           <Stack.Screen name="Register" component={Register} />

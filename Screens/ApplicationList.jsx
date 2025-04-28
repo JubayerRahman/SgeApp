@@ -1,12 +1,16 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const ApplicationList = () => {
   const [token, setToken] = useState('');
   const [applications, setApplications] = useState([]);
+  const [page, setPage] = useState(1); // ⭐ New
+  const [loading, setLoading] = useState(false); // ⭐ New
+  const [hasMore, setHasMore] = useState(true); // ⭐ New
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -22,58 +26,105 @@ const ApplicationList = () => {
     fetchToken();
   }, []);
 
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await axios.get('https://dev.shabujglobal.org/api/application?id&page=1&perPage=10', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
-        setApplications(response?.data?.data || []);
-      } catch (error) {
-        console.error('Error fetching applications:', error);
-      }
-    };
+  const fetchApplications = useCallback(async () => {
+    if (loading || !hasMore) return; // Prevent multiple calls 🔥
+    setLoading(true);
+    try {
+      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery&sortBy&orderBy&status&university&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
 
+      const newApplications = response?.data?.data || [];
+
+      if (newApplications.length === 0) {
+        setHasMore(false); // No more data to fetch 🛑
+      } else {
+        setApplications(prevApps => [...prevApps, ...newApplications]); // Add to existing list 💖
+        setPage(prevPage => prevPage + 1); // Next page ready 🚀
+      }
+    } catch (error) {
+      console.error('Error fetching applications:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [token, page, loading, hasMore]);
+
+  useEffect(() => {
     if (token) {
       fetchApplications();
     }
-  }, [token]);
+  }, [token, fetchApplications]);
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
-      <Text style={[styles.cell, { flex: 0.5 }]} numberOfLines={1} ellipsizeMode="tail">Buttons</Text>
-      <Text style={[styles.cell, { flex: 1 }]} numberOfLines={1} ellipsizeMode="tail">{item.application_id}</Text>
-      <Text style={[styles.cell, { flex: 2 }]} numberOfLines={1} ellipsizeMode="tail">{item.ageing}</Text>
-      <Text style={[styles.cell, { flex: 3 }]} numberOfLines={1} ellipsizeMode="tail">{item.status}</Text>
-      <Text style={[styles.cell, { flex: 4 }]} numberOfLines={2} ellipsizeMode="tail">
+      <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}>
+        <TouchableOpacity><AntDesign name="eyeo" size={24} color="#000" />  </TouchableOpacity>
+        {'\n'}
+        {'\n'}
+        <TouchableOpacity><AntDesign name="delete" size={24} color="#000" /></TouchableOpacity></Text>
+      <Text style={[styles.cell, { width: 150 }]}>{item.application_id} <AntDesign name="bells" size={24} color="#000" /></Text>
+      <Text style={[styles.cell, { width: 150 }]}>{item.ageing}</Text>
+      <Text style={[styles.cell, { width: 150 }]}>{item.status_text}</Text>
+      <Text style={[styles.cell, { width: 150 }]}>
         {item.student.first_name} {item.student.last_name} {'\n'} {item.student.email}
       </Text>
-      <Text style={[styles.cell, { flex: 5 }]} numberOfLines={2} ellipsizeMode="tail">
-        {item.student.university} {/* Adjust according to available data */}
+      <Text style={[styles.cell, { width: 150 }]}>
+        {item.university.name}
+        {'\n'}
+        {item.course.name}
+        {'\n'}
+        {item.intake.name}
+      </Text>
+      <Text style={[styles.cell, { width: 150 }]}>
+        {item.application_officer?.name_with_email}
+      </Text>
+      <Text style={[styles.cell, { width: 150 }]}>
+        {item.user?.parent?.email}
+      </Text>
+      <Text style={[styles.cell, { width: 150 }]}>
+        {item.user?.company_name}
+        {'\n'}
+        {item.user?.email}
+      </Text>
+      <Text style={[styles.cell, { width: 150 }]}>
+        {item.created_at}
       </Text>
     </View>
   );
+
+  const renderFooter = () => {
+    if (!loading) return null;
+    return <ActivityIndicator style={{ marginVertical: 20 }} size="large" color="#7367f0" />;
+  };
 
   return (
     <ScrollView horizontal={true} style={{ flexGrow: 0 }}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={[styles.headerCell, { flex: 0.5 }]} numberOfLines={1} ellipsizeMode="tail">Actions</Text>
-          <Text style={[styles.headerCell, { flex: 1 }]} numberOfLines={1} ellipsizeMode="tail">Application ID</Text>
-          <Text style={[styles.headerCell, { flex: 2 }]} numberOfLines={1} ellipsizeMode="tail">Ageing(Days)</Text>
-          <Text style={[styles.headerCell, { flex: 3 }]} numberOfLines={1} ellipsizeMode="tail">Status</Text>
-          <Text style={[styles.headerCell, { flex: 4 }]} numberOfLines={1} ellipsizeMode="tail">Student Details</Text>
-          <Text style={[styles.headerCell, { flex: 5 }]} numberOfLines={2} ellipsizeMode="tail">University/Course Details</Text>
+          {/* Header cells (unchanged) */}
+          <Text style={[styles.headerCell, { flex: 0.5 }]}>Actions</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Application ID</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Ageing(Days)</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Status</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Student Details</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>University/Course Details</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Application Officer</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Application Control Officer</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Channel Partner/Created By</Text>
+          <Text style={[styles.headerCell, { width: 150 }]}>Date Added</Text>
         </View>
 
         <FlatList
           data={applications}
           renderItem={renderItem}
-          keyExtractor={(item) => item.application_id.toString()}
+          keyExtractor={(item, index) => item.application_id?.toString() + index}
+          ListFooterComponent={renderFooter}
+          onEndReached={fetchApplications}
+          onEndReachedThreshold={0.5}
         />
       </View>
     </ScrollView>
@@ -88,6 +139,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    justifyContent: "center",
+    alignItems: "center"
   },
   headerCell: {
     flex: 1,
@@ -95,13 +148,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Montserrat_700Bold',
     color: 'white',
-    textAlign: 'center',
+    textAlign: 'justify',
   },
   row: {
     flexDirection: 'row',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    alignItems: "center",
+    justifyContent: "center"
   },
   cell: {
     flex: 1,
@@ -109,8 +164,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Montserrat_400Regular',
     color: 'black',
-    textAlign: 'center',
-    overflow: 'hidden',
+    textAlign: 'left',
+    overflow: 'hidden'
   },
 });
 
