@@ -1,12 +1,13 @@
-import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, Alert } from 'react-native'
-import React, { useState } from 'react'
+import {Text, StyleSheet, Button, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, Alert, BackHandler } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useNavigationState } from '@react-navigation/native';
 import logo from "../../assets//AGELogo.svg"
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import * as Updates from 'expo-updates';
 // import { SvgUri } from 'react-native-svg';
 
 const loginScreen = () => {
@@ -16,6 +17,27 @@ const loginScreen = () => {
     const [password, setPassword] = useState('');
     const [passView, setPassView] = useState(true)
     const [eyeColor, setEyeColor] = useState("#4F8EF7")
+const routes = useNavigationState(state => state);
+  const currentRoute = routes.routes[routes.index].name
+  useFocusEffect(
+    useCallback(() => {
+      const routeNamesToExit = ['Dashboard', 'Login'];
+  
+      if (routeNamesToExit.includes(currentRoute)) {
+        const onBackPress = () => {
+          BackHandler.exitApp(); // 🔥 Bye bye app
+          return true;
+        };
+  
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          onBackPress
+        );
+  
+        return () => backHandler.remove(); // Cleanup when screen loses focus
+      }
+    }, [])
+  );
 
 
     const LoginFunc = ()=>{
@@ -39,6 +61,7 @@ const loginScreen = () => {
             AsyncStorage.setItem('email', email)
             AsyncStorage.setItem('accesstoken', accesstoken)
             navigation.navigate("Dashboard")
+            // Updates.reload()
           }
         })
         .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong"))

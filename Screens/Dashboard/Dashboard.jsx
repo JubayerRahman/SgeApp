@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, BackHandler } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer'
+import { useNavigation } from '@react-navigation/native';
 import DashboardHome from './DashboardHome/DashboardHome'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -32,11 +33,15 @@ import User from '../User/User';
 import Email from '../Email/Email';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import Logout from '../Logout/Logout';
 
 
 const Dashboard = () => {
   const Drawer = createDrawerNavigator();
   const [userName, setUserName] = useState()
+
+
+  
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -418,17 +423,24 @@ const Dashboard = () => {
     );
   }
 
+  // const navigation = useNavigation();
+
   return (
     <Drawer.Navigator 
-    drawerContent={(props) => <CustomDrawerContent {...props} />} 
-    initialRouteName='Dashboard' screenOptions={{
-      headerRight:()=>(
-        <TouchableOpacity style={{marginRight:20, flexDirection:"row", justifyContent:"center", gap:5}}>
-            <AntDesign name="bells" size={24} color="#000" />
-            <Text style={{fontFamily:"Montserrat_400Regular"}}>{userName}</Text>
-          </TouchableOpacity>
-      )
-    }}>
+  drawerContent={(props) => <CustomDrawerContent {...props} />} 
+  initialRouteName='Dashboard' 
+  screenOptions={({ navigation }) => ({ // use screenOptions as a function
+    headerRight: () => (
+      <TouchableOpacity 
+         
+        style={{ marginRight: 20, flexDirection: "row", justifyContent: "center", gap: 5 }}
+      >
+        <AntDesign name="bells" size={24} color="#000" />
+        <Text onPress={() => navigation.navigate('Profile')} style={{ fontFamily: "Montserrat_400Regular" }}>{userName}</Text>
+      </TouchableOpacity>
+    )
+  })}
+>
       <Drawer.Screen name="Dashboard" component={DashboardHome}/>
       <Drawer.Screen name="New Application" component={NewApplication}/>
       <Drawer.Screen name="Application List" component={ApplicationList}/>
@@ -451,6 +463,7 @@ const Dashboard = () => {
       <Drawer.Screen name="Add Notices" component={AddNotices}/>
       <Drawer.Screen name="User" component={User}/>
       <Drawer.Screen name="Email" component={Email}/>
+      <Drawer.Screen name="Profile" component={Logout}/>
     </Drawer.Navigator>
   )
 }

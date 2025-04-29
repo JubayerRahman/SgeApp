@@ -1,7 +1,29 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, BackHandler } from 'react-native'
+import React, { useCallback, useEffect } from 'react'
+import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 
 const DashboardHome = () => {
+  const routes = useNavigationState(state => state);
+  const currentRoute = routes.routes[routes.index].name
+  useFocusEffect(
+    useCallback(() => {
+      const routeNamesToExit = ['Dashboard', 'Login'];
+  
+      if (routeNamesToExit.includes(currentRoute)) {
+        const onBackPress = () => {
+          BackHandler.exitApp(); // 🔥 Bye bye app
+          return true;
+        };
+  
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          onBackPress
+        );
+  
+        return () => backHandler.remove(); // Cleanup when screen loses focus
+      }
+    }, [])
+  );
   return (
     <TouchableOpacity  style={styles.container}>
             <View style={{alignItems:"center", backgroundColor:"#87CEEB", padding: 15, borderRadius: 20, shadowColor:"#000", shadowOffset:{width: 0, height: 2}, shadowOpacity: 0.25,  elevation: 100, }}>
