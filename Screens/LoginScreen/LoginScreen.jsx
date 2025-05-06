@@ -7,6 +7,7 @@ import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNotification } from '../../context/NotificationContext';
 // import * as Updates from 'expo-updates';
 // import { SvgUri } from 'react-native-svg';
 
@@ -17,6 +18,7 @@ const loginScreen = () => {
     const [password, setPassword] = useState('');
     const [passView, setPassView] = useState(true)
     const [eyeColor, setEyeColor] = useState("#4F8EF7")
+    const { notification, expoPushToken, error } = useNotification();
 const routes = useNavigationState(state => state);
   const currentRoute = routes.routes[routes.index].name
   useFocusEffect(
@@ -46,7 +48,7 @@ const routes = useNavigationState(state => state);
         Alert.alert("Fill all the fields")
       }
       else{
-        const loginInfo = {email, password}
+        const loginInfo = {email, password, expoPushToken}
 
         axios.post("https://dev.shabujglobal.org/api/login", loginInfo)
         .then(res=>{

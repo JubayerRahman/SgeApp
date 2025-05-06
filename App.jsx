@@ -15,6 +15,11 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import Dashboard from './Screens/Dashboard/Dashboard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NotificationProvider } from './context/NotificationContext';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { navigationRef } from './navigationRef';
 
 const Stack = createNativeStackNavigator();
 
@@ -73,9 +78,18 @@ export default function App() {
     return null; // Render nothing while resources are loading
   }
 
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
+      <NotificationProvider>
         <Stack.Navigator initialRouteName={userName === undefined ? "Home" : "Dashboard"} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={loginScreen} />
           <Stack.Screen name="Login" component={loginScreen} />
@@ -84,6 +98,7 @@ export default function App() {
           <Stack.Screen name="Dashboard" component={Dashboard} />
         </Stack.Navigator>
         <StatusBar style="dark" backgroundColor='white'/>
+      </NotificationProvider>
       </NavigationContainer>
     </GestureHandlerRootView>
   );

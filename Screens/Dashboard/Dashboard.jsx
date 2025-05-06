@@ -34,6 +34,7 @@ import Email from '../Email/Email';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import Logout from '../Logout/Logout';
+import Application from '../Application/Application';
 
 
 const Dashboard = () => {
@@ -444,6 +445,7 @@ const Dashboard = () => {
       <Drawer.Screen name="Dashboard" component={DashboardHome}/>
       <Drawer.Screen name="New Application" component={NewApplication}/>
       <Drawer.Screen name="Application List" component={ApplicationList}/>
+      <Drawer.Screen name="Application" component={Application}/>
       <Drawer.Screen name="Application Request" component={ApplicationRequest}/>
       <Drawer.Screen name="Compliance Request" component={ComplianceRequest}/>
       <Drawer.Screen name="University List" component={UniversityList}/>

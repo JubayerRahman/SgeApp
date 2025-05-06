@@ -17,17 +17,31 @@
       "supportsTablet": true
     },
     "android": {
+      "buildType": "apk" ,
+      "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.jobayerrahmanohee.sgeApp"
+      "package": "com.jobayerrahmanohee.sgeApp",
+      "useNextNotificationsApi": true,
+      "googleServicesFile":"./google-services.json",
+      "permissions": []
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#87CEEB",
+          "androidMode": "collapse",
+          "androidCollapsedTitle": "New Notification"
+        }
+      ]
     ],
     "extra": {
       "eas": {

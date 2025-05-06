@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
 
 const ApplicationList = () => {
   const [token, setToken] = useState('');
@@ -59,10 +60,13 @@ const ApplicationList = () => {
     }
   }, [token, fetchApplications]);
 
+  const navigation = useNavigation()
+
   const renderItem = ({ item }) => (
     <View style={styles.row}>
       <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}>
-        <TouchableOpacity><AntDesign name="eyeo" size={24} color="#000" />  </TouchableOpacity>
+        <TouchableOpacity onPress={()=>{ console.log(item.application_id);
+         navigation.navigate("Application",{ApplicationId: item.application_id})}}><AntDesign name="eyeo" size={24} color="#000" />  </TouchableOpacity>
         {'\n'}
         {'\n'}
         <TouchableOpacity><AntDesign name="delete" size={24} color="#000" /></TouchableOpacity></Text>
