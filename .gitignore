@@ -2,8 +2,8 @@
 
 # dependencies
 node_modules/
-.google-services.json
-.sgeapp-cd230-firebase-adminsdk-fbsvc-d558d442da.json
+google-services.json
+sgeapp-cd230-firebase-adminsdk-fbsvc-d558d442da.json
 
 # Expo
 .expo/
