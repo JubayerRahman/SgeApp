@@ -54,7 +54,7 @@ const ApplicationList = () => {
     }
   }, [token, page, loading, hasMore]);
 
-  useEffect(() => {
+  useEffect(() => { 
     if (token) {
       fetchApplications();
     }
