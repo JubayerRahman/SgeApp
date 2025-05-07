@@ -64,12 +64,17 @@ const ApplicationList = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.row}>
-      <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}>
+      {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
+        <View style={{flexDirection:"column", width:80, gap:40}}>
         <TouchableOpacity onPress={()=>{ console.log(item.application_id);
-         navigation.navigate("Application",{ApplicationId: item.application_id})}}><AntDesign name="eyeo" size={24} color="#000" />  </TouchableOpacity>
-        {'\n'}
-        {'\n'}
-        <TouchableOpacity><AntDesign name="delete" size={24} color="#000" /></TouchableOpacity></Text>
+         navigation.navigate("Application",{ApplicationId: item.application_id})}}>
+          <Text><AntDesign name="eyeo" size={24} color="#7367f0" /></Text>  </TouchableOpacity>
+        <TouchableOpacity>
+          <Text>
+          <AntDesign name="delete" size={24} color="#000" />
+          </Text>
+        </TouchableOpacity>
+        </View>
       <Text style={[styles.cell, { width: 150 }]}>{item.application_id} <AntDesign name="bells" size={24} color="#000" /></Text>
       <Text style={[styles.cell, { width: 150 }]}>{item.ageing}</Text>
       <Text style={[styles.cell, { width: 150 }]}>{item.status_text}</Text>

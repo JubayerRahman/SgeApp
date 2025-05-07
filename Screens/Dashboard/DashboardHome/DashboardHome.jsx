@@ -11,7 +11,7 @@ const DashboardHome = () => {
 
   // Back handler logic
   useFocusEffect(
-    useCallback(() => {
+    useCallback(() => { 
       const onBackPress = () => {
         BackHandler.exitApp();
         return true;

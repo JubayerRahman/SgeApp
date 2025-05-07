@@ -13,7 +13,7 @@ const Application = () => {
 
     const [token, setToken] = useState('');
     const [activeTab, setActiveTabs] = useState('student');
-    const [ApplicationData, setApplicationData] = useState()
+    const [ApplicationData, setApplicationData] = useState([])
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -32,6 +32,9 @@ const Application = () => {
 
     const {ApplicationId} = Route.params || {}
 
+    console.log(ApplicationId);
+    
+
     const fetchApplications = useCallback(async () => {
         try {
           const response = await axios.get(`https://dev.shabujglobal.org/api/application/${ApplicationId}`, {
@@ -48,13 +51,16 @@ const Application = () => {
         } catch (error) {
           console.error('Error fetching applications:', error);
         } 
-      }, [token]);
+      }, [token, ApplicationId]);
 
        useEffect(() => {
           if (token) {
             fetchApplications();
+            setActiveTabs("student")
           }
-        }, [token]);
+        }, [token, ApplicationId]);
+        console.log(ApplicationData);
+        
 
         const TABS = [
             { key: 'student', label: 'Student/Course Details' },
@@ -68,9 +74,9 @@ const Application = () => {
               case 'student':
                 return <StudentCourseDetails data={ApplicationData} />;
               case 'university':
-                return <UniversityDetails />;
+                return <UniversityDetails data={ApplicationData} />;
               case 'Upload/Download':
-                return <UploadDownload/>;
+                return <UploadDownload data={ApplicationData}/>;
               case 'Status':
                 return <Status/>;
               default:

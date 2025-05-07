@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
 const StudentCourseDetails = ({data}) => {
+  
     
   return (
     <View style={styles.container}>
@@ -21,8 +22,8 @@ const StudentCourseDetails = ({data}) => {
       <Text style={styles.text}><Text style={styles.lableText}>Intake Name </Text> {data?.intake?.name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Course Name </Text> {data?.course?.name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Compliance Officer </Text> {data?.compliance_officer=== null? "No compliance officer assigned	": data?.compliance_officer}</Text>
-      <Text style={styles.text}><Text style={styles.lableText}>Application Officer </Text> {data?.application_officer=== null? "No application officer assigned	": data?.application_officer}</Text>
-      <Text style={styles.text}><Text style={styles.lableText}>Application Controll Officer </Text> {data?.application_control_officer=== null? "No application control officer assigned	": data?.application_control_officer}</Text>
+      <Text style={styles.text}><Text style={styles.lableText}>Application Officer </Text> {data?.application_officer?.full_name=== null? "No application officer assigned	": data?.application_officer?.full_name}</Text>
+      <Text style={styles.text}><Text style={styles.lableText}>Application Controll Officer </Text> {data?.application_control_officer?.full_name== null? "No application control officer assigned	": data?.application_control_officer?.full_name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Counsellor </Text> {data?.user?.full_name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Application age	</Text> {data?.ageing}</Text>
     </View>
