@@ -69,7 +69,6 @@ const UploadDownload = ({data}) => {
   );
 
   const ChangeFileName = async () => {
-    console.log(new_name);
     try {
       setLoading(true)
       const response = await axios.put(
@@ -120,7 +119,7 @@ const UploadDownload = ({data}) => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, height, padding:10 }}>
-     <Toast style={{zIndex: 100, position: 'absolute', top: 0,}} />
+     <Toast style={{zIndex: 100, position: 'absolute', top: 0, elevation:10}} />
      <TouchableOpacity onPress={DownloadWholeZip}>
       <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"40%", marginBottom:20, marginLeft:"60%", textAlign:"center", marginTop:50 }}>Download All</Text>
      </TouchableOpacity>

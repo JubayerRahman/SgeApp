@@ -59,7 +59,6 @@ const Application = () => {
             setActiveTabs("student")
           }
         }, [token, ApplicationId]);
-        console.log(ApplicationData);
         
 
         const TABS = [
@@ -78,7 +77,7 @@ const Application = () => {
               case 'Upload/Download':
                 return <UploadDownload data={ApplicationData}/>;
               case 'Status':
-                return <Status/>;
+                return <Status applicationId={ApplicationId}/>;
               default:
                 return <Text>No content</Text>;
             }
