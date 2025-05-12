@@ -1,17 +1,25 @@
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, Image } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
+import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
+import { LinearGradient } from 'expo-linear-gradient';
+import LoagingScreen from '../components/LoagingScreen';
+
+const { height } = Dimensions.get('window');
 
 const ApplicationList = () => {
   const [token, setToken] = useState('');
   const [applications, setApplications] = useState([]);
-  const [page, setPage] = useState(1); // ⭐ New
-  const [loading, setLoading] = useState(false); // ⭐ New
-  const [hasMore, setHasMore] = useState(true); // ⭐ New
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  
+
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -112,6 +120,12 @@ const ApplicationList = () => {
 
   return (
     <ScrollView horizontal={true} style={{ flexGrow: 0 }}>
+      {applications.length === 0 ?
+      (
+        <LoagingScreen/>
+      )
+      :
+      (
       <View style={styles.container}>
         <View style={styles.header}>
           {/* Header cells (unchanged) */}
@@ -135,13 +149,13 @@ const ApplicationList = () => {
           onEndReached={fetchApplications}
           onEndReachedThreshold={0.5}
         />
-      </View>
+      </View>)}
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16, overflow: 'scroll', flexGrow: 0 },
+  container: { padding: 16, overflow: 'scroll', flexGrow: 0, height:{height} },
   header: {
     flexDirection: 'row',
     backgroundColor: '#7367f0',

@@ -8,6 +8,8 @@ import StudentCourseDetails from './ApplicationScreens/StudentCourseDetails';
 import UniversityDetails from './ApplicationScreens/UniversityDetails';
 import UploadDownload from './ApplicationScreens/UploadDownload';
 import Status from './ApplicationScreens/Status';
+import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Application = () => {
 
@@ -83,16 +85,38 @@ const Application = () => {
             }
           };
     
+          // <ShimmerPlaceholder 
+          // width={220}
+          // height={100}
+          // shimmerColors={['#e0e0e0', '#f5f5f5', '#e0e0e0']}
+          // style={{borderRadius: 10}}/>
   return (
     <View>
-      <ScrollView horizontal style={{ padding: 10, margin:5 }}>
-        {TABS.map(tab=>(
-            <TouchableOpacity key={tab.key} style={{paddingRight:10}} onPress={() => setActiveTabs(tab.key)}>
-                <Text style={{fontFamily: 'Montserrat_700Bold', fontSize: 15, color: activeTab === tab.key ? '#007AFF' : '#ccc', borderColor: "#007AFF", borderBottomWidth: activeTab === tab.key ? 2 : 0 , padding:5 }}>{tab.label}</Text>
-                <View style={{width:20}}></View>
-            </TouchableOpacity>
-        ))}
-      </ScrollView>
+    <Text style={{paddingTop:20, paddingLeft:10, fontFamily:"Montserrat_700Bold", fontSize:20}}>Application Details</Text>
+  <ScrollView horizontal style={{ padding: 10, margin: 5 }}>
+    {TABS.map(tab => (
+      <TouchableOpacity
+        key={tab.key}
+        style={{ paddingRight: 10 }}
+        onPress={() => setActiveTabs(tab.key)}
+      >
+        <Text
+          style={{
+            fontFamily: 'Montserrat_700Bold',
+            fontSize: 15,
+            color: activeTab === tab.key ? '#007AFF' : '#ccc',
+            borderColor: '#007AFF',
+            borderBottomWidth: activeTab === tab.key ? 2 : 0,
+            padding: 5,
+          }}
+        >
+          {tab.label}
+        </Text>
+        <View style={{ width: 20 }} />
+      </TouchableOpacity>
+    ))}
+  </ScrollView>
+
 
       <ScrollView>
         {renderContent()}

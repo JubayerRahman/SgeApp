@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Button, Dimensions, Image, Modal, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, StyleSheet, Button, Dimensions, Image, Modal, TouchableOpacity, ActivityIndicator, Linking, Alert } from 'react-native';
 import { FlatList, GestureHandlerRootView, TextInput } from 'react-native-gesture-handler';
 import {
   BottomSheetModal,
@@ -14,6 +14,7 @@ import WebView from 'react-native-webview';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import * as DocumentPicker from 'expo-document-picker';
 
 const UploadDownload = ({data}) => {
   const documents = data?.student?.document;
@@ -28,6 +29,7 @@ const UploadDownload = ({data}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false)
+  const [file, setFile] = useState("")
 
   useEffect(() => {
     setDocumentList(documents);
@@ -111,6 +113,51 @@ const UploadDownload = ({data}) => {
     Linking.openURL(data?.student?.document_zip_link)
     .then(res=> console.log(res))
   }
+
+  const uploadFile = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['image/jpeg', 'image/png', 'application/pdf'],
+      });
+  
+      if (result.canceled || !result.assets || !result.assets[0]) {
+        console.log('No file selected');
+        return;
+      }
+  
+      const fileAsset = result.assets[0];
+  
+      const formData = new FormData();
+  
+      formData.append('student_document', {
+        uri: fileAsset.uri,
+        name: fileAsset.name,
+        type: fileAsset.mimeType || 'application/octet-stream',
+      });
+  
+      formData.append('document_name', 'student_document');
+      formData.append('filename', fileAsset.name);
+  
+      const response = await axios.post(
+        'https://service.shabujglobal.org/process-document',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      console.log('Upload successful:', response.data);
+      Alert.alert("Document Uploaded successful")
+    } catch (error) {
+      console.error('Upload error:', error);
+    }
+  };
+  
+  
   
   
   
@@ -120,8 +167,11 @@ const UploadDownload = ({data}) => {
   return (
     <GestureHandlerRootView style={{ flex: 1, height, padding:10 }}>
      <Toast style={{zIndex: 100, position: 'absolute', top: 0, elevation:10}} />
+     <TouchableOpacity onPress={uploadFile} style={{alignItems:"center", justifyContent:"center", borderWidth:1, padding:40, borderColor:"#7367f0", borderRadius:20}}>
+        <AntDesign name="addfile" size={40} color="#7367f0"/>
+     </TouchableOpacity>
      <TouchableOpacity onPress={DownloadWholeZip}>
-      <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"40%", marginBottom:20, marginLeft:"60%", textAlign:"center", marginTop:50 }}>Download All</Text>
+      <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"40%", marginBottom:20, marginLeft:"60%", textAlign:"center", marginTop:20 }}>Download All</Text>
      </TouchableOpacity>
      <FlatList
      style={{marginBottom:70, zIndex:0}}

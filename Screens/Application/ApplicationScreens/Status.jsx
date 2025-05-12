@@ -1,14 +1,15 @@
-import { View, Text, TouchableOpacity, Modal, Image } from 'react-native'
+import { View, Text, TouchableOpacity, Modal, Image, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import * as DocumentPicker from 'expo-document-picker';
+import LoagingScreen from '../../../components/LoagingScreen';
 
 const Status = ({applicationId}) => {
 
@@ -19,6 +20,9 @@ const Status = ({applicationId}) => {
   const [documentURL, setDocumentURL] = useState("")
   const [formallStatus, setFormAllStatus] = useState([])
   const [file, setFile] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [newComment, setNewComment] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const PickAFile = async()=>{
     const result = await DocumentPicker.getDocumentAsync({type:['image/jpeg', 'image/png', 'application/pdf']})
@@ -26,6 +30,8 @@ const Status = ({applicationId}) => {
       setFile(result)
     }
   }
+  console.log(newComment);
+  
 
   useEffect(() => {
     if (file) {
@@ -49,6 +55,8 @@ const Status = ({applicationId}) => {
   }, []);
 
   const FeatchingAllStatus = async () => {
+    console.log(token);
+    
     try {
       const response = await axios.get(`https://dev.shabujglobal.org/api/application-statuses/${applicationId}`, {
         headers: {
@@ -91,6 +99,43 @@ const Status = ({applicationId}) => {
   value: item.name
 }));
   
+const statusUpload = async () => {
+  const formData = new FormData();
+
+  formData.append('status', selectedStatus);
+  formData.append('comment', newComment);
+
+  // 👇 Only append file if it exists
+  if (file && file.assets && file.assets[0]) {
+    formData.append('file', {
+      uri: file.assets[0].uri,
+      name: file.assets[0].name,
+      type: file.assets[0].mimeType,
+    });
+  }
+
+  try {
+    setLoading(true)
+    const response = await axios.post(
+      `https://dev.shabujglobal.org/api/application/${applicationId}/status`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    setLoading(false)
+    setFormMdal(false)
+    FeatchingAllStatus()
+  } catch (err) {
+    setLoading(false)
+    console.error('Upload failed:', err);
+  }
+};
 
   const RenderItem = ({item, index})=>{
     
@@ -123,7 +168,12 @@ const Status = ({applicationId}) => {
   
   
   return (
-    <View style={{padding:10}}>
+    <View>
+      {AllStatus.length === 0 ?
+      <LoagingScreen/>
+      : 
+      (
+        <View style={{padding:10}}>
       <TouchableOpacity onPress={()=>setFormMdal(!FormModal)}>
             <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"70%", marginBottom:20, marginLeft:"30%", textAlign:"center" }}>Change Current Status</Text>
            </TouchableOpacity>
@@ -153,19 +203,67 @@ const Status = ({applicationId}) => {
           transparent={true}
           visible={FormModal}
         >
-          <View  
-      style={{backgroundColor:"white", alignItems:"center", justifyContent:"center", width:"80%", marginLeft:"10%", height:"70%", marginTop:"25%", borderColor:"white", borderWidth:1, borderRadius:10, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, elevation:5}}>
-        <SelectList boxStyles={{width:"95%"}} data={statusList} save='value' placeholder='Slesct Status'/>
-            <Text onPress={PickAFile}>Selesct a flie</Text>
-            <Text>{file?.assets[0]?.name}</Text>
-          <Text 
-        onPress={() => {
-      setFormMdal(!FormModal);
-      console.log("Clocking");
-    }} 
-    >Close</Text>
+          <View contentContainerStyle={{ flexGrow: 1 }}  
+      style={{backgroundColor:"white", alignItems:"center", justifyContent:"center", width:"80%", marginLeft:"10%", height:"70%", marginTop:"25%", borderColor:"white", borderWidth:1, borderRadius:10, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, elevation:5, gap: 10}}>
+        <SelectList 
+        setSelected={(val)=>setSelectedStatus(val)} 
+        boxStyles={{width:"95%"}} 
+        data={statusList} 
+        save='key' 
+        placeholder='Slesct Status'/>
+            <View style={{width:"90%"}}>
+              <Text>Select a file (Optional)</Text>
+            <TouchableOpacity>
+              <Text onPress={PickAFile}>
+                <AntDesign name="addfile" size={25} color="#7367f0"/>
+              </Text>
+            </TouchableOpacity>
+            </View>
+            <View style={{width:"90%"}}>
+              <Text>Comment (Optional)</Text>
+              <TextInput
+                style={{
+                  borderWidth: 1,
+                  borderColor: "#d3d3d3",
+                  textAlignVertical: 'top',
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+                value={newComment}
+                onChangeText={(val)=>setNewComment(val)}
+                placeholder="Comment here"
+              />
+            </View>
+          <View style={{flexDirection:"row", gap:10}}>
+          <TouchableOpacity style={{flexDirection:"row",  borderRadius:10, marginTop:10, marginBottom:10, padding:10, width:"30%"}}>
+              <Text 
+                onPress={() => {
+              setFormMdal(!FormModal);
+            }}
+            style={{width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:14, textAlign:"center" }}
+            >
+              Close
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10, width:"30%"}} onPress={() => {
+              statusUpload()
+            }}>
+              {loading?
+                              
+              <ActivityIndicator color="white" style={{ marginLeft: "35%", marginRight:"50%" }} />
+              :
+              <Text 
+            style={{color:"white", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:14, textAlign:"center" }}
+            >
+              Submit
+            </Text>}
+          </TouchableOpacity>
+          </View>
           </View>
         </Modal>
+    </View>
+      )
+      }
     </View>
   )
 }

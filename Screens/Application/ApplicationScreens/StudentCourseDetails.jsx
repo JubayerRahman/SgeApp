@@ -1,11 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import LoagingScreen from '../../../components/LoagingScreen'
 
 const StudentCourseDetails = ({data}) => {
   
     
   return (
-    <View style={styles.container}>
+    <View>
+      {!data?
+      <LoagingScreen/>
+      :
+      <View style={styles.container}>
       <Text style={styles.text}><Text style={styles.lableText}>Application Id </Text> {data?.application_id}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Date Added </Text> {data?.created_at}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Student Id </Text> {data?.student?.student_id}</Text>
@@ -26,6 +31,8 @@ const StudentCourseDetails = ({data}) => {
       <Text style={styles.text}><Text style={styles.lableText}>Application Controll Officer </Text> {data?.application_control_officer?.full_name== null? "No application control officer assigned	": data?.application_control_officer?.full_name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Counsellor </Text> {data?.user?.full_name}</Text>
       <Text style={styles.text}><Text style={styles.lableText}>Application age	</Text> {data?.ageing}</Text>
+    </View>
+      }
     </View>
   )
 }

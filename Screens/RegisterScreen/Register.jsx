@@ -244,7 +244,7 @@ const Register = () => {
             }
           })
           .catch(error=> {
-            const msg = error?.response?.data?.message || error?.message || "Something went wrong, babe 💔";
+            const msg = error?.response?.data?.message || error?.message || "Something went wrong";
             Alert.alert( msg);
           })
           console.log(Allinfo);
