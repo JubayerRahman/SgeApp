@@ -144,15 +144,15 @@ const statusUpload = async () => {
         <Text style={{fontFamily:"Montserrat_700Bold", fontSize:18, padding:10}}>{item?.application_status?.name}{`\n`}
           {index === 0 && (<Text style={{color:"red", fontSize: 16}}>(Current Status)</Text>)}
         </Text>
-        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginTop:10, padding:10, backgroundColor:"#d3d3d3"}}>
+        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginTop:10, padding:10, backgroundColor:"#d3d3d3", gap:2}}>
           <View style={{flexDirection:"row", gap:5, alignItems:"center", width:"45%",}}>
             <AntDesign style={{color:"#7367f0"}} name="clockcircleo" size={20}/>
             <Text style={{fontFamily:"Montserrat_400Regular", fontSize:12}}>{item?.created_at}</Text>
           </View>
           {item?.comment && (
-            <View style={{ flexDirection: "row", gap: 5, alignItems: "center", width: "25%" }}>
+            <View style={{ flexDirection: "row", gap: 5, alignItems: "center", width: "25%", }}>
               <Ionicons style={{ color: "#7367f0" }} name="chatbubble-ellipses-outline" size={20} />
-              <Text style={{ fontFamily: "Montserrat_400Regular", fontSize: 12 }}>
+              <Text style={{ fontFamily: "Montserrat_400Regular", fontSize: 12, width:"72%" }}>
                 {item.comment}
               </Text>
             </View>
@@ -178,7 +178,7 @@ const statusUpload = async () => {
             <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"70%", marginBottom:20, marginLeft:"30%", textAlign:"center" }}>Change Current Status</Text>
            </TouchableOpacity>
         <FlatList
-          style={{marginBottom:70}}
+          style={{marginBottom:120}}
           data={AllStatus}
           renderItem={RenderItem}
           keyExtractor={(item) => item.id.toString()}

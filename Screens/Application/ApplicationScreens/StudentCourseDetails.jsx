@@ -3,11 +3,14 @@ import React from 'react'
 import LoagingScreen from '../../../components/LoagingScreen'
 
 const StudentCourseDetails = ({data}) => {
+
+  console.log(data.application_id);
+  
   
     
   return (
     <View>
-      {!data?
+      {!data.application_id?
       <LoagingScreen/>
       :
       <View style={styles.container}>
