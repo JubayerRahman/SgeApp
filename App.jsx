@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import loginScreen from './Screens/LoginScreen/LoginScreen';
@@ -20,6 +20,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { navigationRef } from './navigationRef';
+import NetInfo from '@react-native-community/netinfo';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,8 +31,16 @@ export default function App() {
   });
 
   const [appIsReady, setAppIsReady] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
 
   const [userName, setUserName] = useState()
+
+  useEffect(()=>{
+    const unsubscribe = NetInfo.addEventListener(state =>{
+      setIsConnected(state.isConnected)
+    })
+    return ()=> unsubscribe()
+  },[])
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -88,6 +97,11 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+     {!isConnected && (
+      <View style={styles.noInternetContainer}>
+        <Text style={styles.noInternetText}>📡 No Internet Connection</Text>
+      </View>
+    )}
       <NavigationContainer ref={navigationRef}>
       <NotificationProvider>
         <Stack.Navigator initialRouteName={userName === undefined ? "Home" : "Dashboard"} screenOptions={{ headerShown: false }}>
@@ -103,3 +117,20 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  noInternetContainer: {
+    backgroundColor: 'red',
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 999,
+    marginTop:30
+  },
+  noInternetText: {
+    color: 'white',
+    // fontWeight: 'bold',
+    fontFamily:"Montserrat_400Regular"
+  },
+});
+
