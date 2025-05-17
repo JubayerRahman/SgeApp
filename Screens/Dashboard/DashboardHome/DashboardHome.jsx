@@ -3,6 +3,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useNavigationState } from '@react-navigation/native';
 import { useNotification } from '../../../context/NotificationContext';
 import * as Clipboard from 'expo-clipboard';
+import SkeletonComponent from '../../../components/SkeletonComponent';
+import LoagingScreen from '../../../components/LoagingScreen';
 
 const DashboardHome = () => {
   const routes = useNavigationState(state => state);
@@ -34,7 +36,9 @@ const DashboardHome = () => {
         <Text style={styles.logoText}>Welcome to SGE App</Text>
         <Text style={styles.logoText}>{expoPushToken}</Text>
         <Text onPress={()=> {Clipboard.setString(expoPushToken), Alert.alert("teken copied")}}>Copy</Text>
-      </View>
+      </View> 
+      {/* <SkeletonComponent/> */}
+      {/* <LoagingScreen/> */}
     </TouchableOpacity>
   );
 };

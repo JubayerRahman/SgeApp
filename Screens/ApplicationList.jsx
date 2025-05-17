@@ -1,4 +1,4 @@
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Dimensions, Image, RefreshControl } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -17,6 +17,7 @@ const ApplicationList = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   
 
@@ -47,8 +48,10 @@ const ApplicationList = () => {
         },
       });
 
+      
+      
       const newApplications = response?.data?.data || [];
-
+      
       if (newApplications.length === 0) {
         setHasMore(false); // No more data to fetch 🛑
       } else {
@@ -61,15 +64,26 @@ const ApplicationList = () => {
       setLoading(false);
     }
   }, [token, page, loading, hasMore]);
-
+  
   useEffect(() => { 
     if (token) {
       fetchApplications();
     }
   }, [token, fetchApplications]);
-
+  
   const navigation = useNavigation()
+  
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setLoading(true)
+    await fetchApplications()
+    setRefreshing(false);
+    setLoading(false)
+  };
 
+  console.log(refreshing);
+  
+  
   const renderItem = ({ item }) => (
     <View style={styles.row}>
       {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
@@ -120,7 +134,7 @@ const ApplicationList = () => {
 
   return (
     <ScrollView horizontal={true} style={{ flexGrow: 0 }}>
-      {applications.length === 0 ?
+      {applications?.length === 0?
       (
         <LoagingScreen/>
       )
@@ -148,6 +162,9 @@ const ApplicationList = () => {
           ListFooterComponent={renderFooter}
           onEndReached={fetchApplications}
           onEndReachedThreshold={0.5}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+          }
         />
       </View>)}
     </ScrollView>

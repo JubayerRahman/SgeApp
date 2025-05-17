@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNotification } from '../../context/NotificationContext';
+import {moderateScale} from "react-native-size-matters"
 // import * as Updates from 'expo-updates';
 // import { SvgUri } from 'react-native-svg';
 
@@ -106,7 +107,7 @@ const routes = useNavigationState(state => state);
         </View>
         <TouchableOpacity style={{width:"85%", alignItems:"flex-end"}}><Text style={styles.links} onPress={()=> navigation.navigate("ForgoetPass")}>Forget password?</Text></TouchableOpacity>
 
-        <TouchableOpacity onPress={LoginFunc} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10}}><Text style={{color:"white", fontFamily: 'Montserrat_400Regular', fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
+        <TouchableOpacity onPress={LoginFunc} style={{flexDirection:"row", backgroundColor:"#7367f0",  borderRadius:10, marginTop:10, marginBottom:10, padding:10, width:"70%", justifyContent:"center"}}><Text style={{color:"white", fontFamily: 'Montserrat_400Regular', fontSize:25, width:"80%", textAlign:"center" }}>Log In</Text></TouchableOpacity>
 
         <TouchableOpacity style={{flexDirection:"row",}}><Text>New on our platform? </Text><Text style={styles.links} onPress={()=> navigation.navigate("Register")}>Create an account</Text></TouchableOpacity>
     </SafeAreaView>
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
   },
   welcomeText:{
     fontFamily: 'Montserrat_700Bold',
-    fontSize: 20
+    fontSize: moderateScale(20)
   },
   input: {
     height: 40,

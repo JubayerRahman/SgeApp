@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import * as DocumentPicker from 'expo-document-picker';
 
-const UploadDownload = ({data}) => {
+const UploadDownload = ({data, setReload}) => {
   const documents = data?.student?.document;
   
   const [documentList, setDocumentList] = useState(documents);
@@ -86,6 +86,7 @@ const UploadDownload = ({data}) => {
       );
 
       setModalVisible(false)
+      setReload(true)
       setnew_name("")
 
       setDocumentList((prevDocs) =>

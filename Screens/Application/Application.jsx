@@ -16,6 +16,7 @@ const Application = () => {
     const [token, setToken] = useState('');
     const [activeTab, setActiveTabs] = useState('student');
     const [ApplicationData, setApplicationData] = useState([])
+    const [Reload, setReload] = useState(false)
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -53,7 +54,7 @@ const Application = () => {
         } catch (error) {
           console.error('Error fetching applications:', error);
         } 
-      }, [token, ApplicationId]);
+      }, [token, ApplicationId, Reload]);
 
        useEffect(() => {
           if (token) {
@@ -77,7 +78,7 @@ const Application = () => {
               case 'university':
                 return <UniversityDetails data={ApplicationData} />;
               case 'Upload/Download':
-                return <UploadDownload data={ApplicationData}/>;
+                return <UploadDownload data={ApplicationData} reload={Reload} setReload={setReload}/>;
               case 'Status':
                 return <Status applicationId={ApplicationId}/>;
               default:
