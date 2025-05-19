@@ -89,7 +89,7 @@ const ApplicationList = () => {
       {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
         <View style={{flexDirection:"column", width:80, gap:40}}>
         <TouchableOpacity onPress={()=>{ console.log(item.application_id);
-         navigation.navigate("Application",{ApplicationId: item.application_id})}}>
+         navigation.navigate("Application",{application_id: item.application_id})}}>
           <Text><AntDesign name="eyeo" size={24} color="#7367f0" /></Text>  </TouchableOpacity>
         <TouchableOpacity>
           <Text>

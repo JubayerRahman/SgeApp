@@ -49,7 +49,7 @@ const routes = useNavigationState(state => state);
         Alert.alert("Fill all the fields")
       }
       else{
-        const loginInfo = {email, password, expoPushToken}
+        const loginInfo = {email, password, expo_push_token:expoPushToken}
 
         axios.post("https://dev.shabujglobal.org/api/login", loginInfo)
         .then(res=>{
@@ -58,6 +58,10 @@ const routes = useNavigationState(state => state);
             const email = res?.data?.data?.userData?.email
             const name = res?.data?.data?.userData?.full_name
             const accesstoken = res?.data?.data?.accessToken
+
+            if (accesstoken) {
+              
+            }
             
             // Saving Data into device
             AsyncStorage.setItem('name', name)

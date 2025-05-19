@@ -63,16 +63,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         const screen = data?.screen;
+        const application_id = data?.application_id;
     
         console.log("🔔 Notification tapped!", data);
-        if (screen) {
+        if (screen && application_id) {
           setTimeout(() => {
-            navigate(screen); // 👈 Global navigation baby!
+            navigate(screen, {application_id}); // 👈 Global navigation baby!
           }, 1000);
         }
-        setTimeout(() => {
-          navigate('Application List'); // 👈 Global navigation baby!
-        }, 1000);
       });
 
     return () => {
