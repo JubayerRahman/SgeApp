@@ -64,6 +64,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         const data = response.notification.request.content.data;
         const screen = data?.screen;
         const application_id = data?.application_id;
+        console.log(screen);
+        
     
         console.log("🔔 Notification tapped!", data);
         if (screen && application_id) {

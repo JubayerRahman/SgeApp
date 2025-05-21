@@ -8,7 +8,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNotification } from '../../context/NotificationContext';
-import {moderateScale} from "react-native-size-matters"
+import {moderateScale} from "react-native-size-matters";
+import * as Application from 'expo-application';
 // import * as Updates from 'expo-updates';
 // import { SvgUri } from 'react-native-svg';
 
@@ -20,7 +21,10 @@ const loginScreen = () => {
     const [passView, setPassView] = useState(true)
     const [eyeColor, setEyeColor] = useState("#4F8EF7")
     const { notification, expoPushToken, error } = useNotification();
+    const uniqueId = Application.getAndroidId()
 const routes = useNavigationState(state => state);
+console.log("Hii I am Application Id:"+uniqueId);
+
   const currentRoute = routes.routes[routes.index].name
   useFocusEffect(
     useCallback(() => {
@@ -49,7 +53,7 @@ const routes = useNavigationState(state => state);
         Alert.alert("Fill all the fields")
       }
       else{
-        const loginInfo = {email, password, expo_push_token:expoPushToken}
+        const loginInfo = {email, password, expo_push_token:expoPushToken, device_identifier:uniqueId}
 
         axios.post("https://dev.shabujglobal.org/api/login", loginInfo)
         .then(res=>{
@@ -71,7 +75,12 @@ const routes = useNavigationState(state => state);
             // Updates.reload()
           }
         })
-        .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong"))
+        .catch(error=>
+          console.log(error?.response?.data?.message || error?.message || "Something went wrong")
+          
+          // Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong")
+      
+      )
         console.log(loginInfo);
       }
       

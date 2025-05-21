@@ -50,7 +50,8 @@
     "react-native-zip-archive": "^7.0.1",
     "react-dom": "18.3.1",
     "react-native-web": "~0.19.13",
-    "@expo/metro-runtime": "~4.0.1"
+    "@expo/metro-runtime": "~4.0.1",
+    "expo-application": "~6.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
