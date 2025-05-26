@@ -75,10 +75,7 @@ console.log("Hii I am Application Id:"+uniqueId);
             // Updates.reload()
           }
         })
-        .catch(error=>
-          console.log(error?.response?.data?.message || error?.message || "Something went wrong")
-          
-          // Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong")
+        .catch(error=>Alert.alert(error?.response?.data?.message || error?.message || "Something went wrong")
       
       )
         console.log(loginInfo);

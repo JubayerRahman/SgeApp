@@ -8,6 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoagingScreen from '../components/LoagingScreen';
+import { IconButton, List, Searchbar } from 'react-native-paper';
+import StatusFilter from '../components/StatusFilter';
+import DateFilter from '../components/DateFilter';
 
 const { height } = Dimensions.get('window');
 
@@ -18,6 +21,8 @@ const ApplicationList = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchValue, setSearchvalue] = useState("")
+  const [expend, setExpend] = useState(false)
 
   
 
@@ -40,7 +45,7 @@ const ApplicationList = () => {
     if (loading || !hasMore) return; // Prevent multiple calls 🔥
     setLoading(true);
     try {
-      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery&sortBy&orderBy&status&university&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
+      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery=${searchValue}&sortBy&orderBy&status&university&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -55,21 +60,37 @@ const ApplicationList = () => {
       if (newApplications.length === 0) {
         setHasMore(false); // No more data to fetch 🛑
       } else {
-        setApplications(prevApps => [...prevApps, ...newApplications]); // Add to existing list 💖
-        setPage(prevPage => prevPage + 1); // Next page ready 🚀
+        if (searchValue) {
+          setApplications(newApplications)
+          console.log("search");
+          
+        }
+        else{
+          setApplications(prevApps => [...prevApps, ...newApplications]);
+        }
+        setPage(prevPage => prevPage + 1);
       }
     } catch (error) {
       console.error('Error fetching applications:', error);
     } finally {
       setLoading(false);
     }
-  }, [token, page, loading, hasMore]);
+  }, [token, page, loading, hasMore, searchValue]);
   
-  useEffect(() => { 
-    if (token) {
-      fetchApplications();
-    }
-  }, [token, fetchApplications]);
+  useEffect(() => {
+  if (token) {
+    setApplications([]);
+    setPage(1);
+    setHasMore(true);
+  }
+}, [searchValue, token]);
+
+useEffect(() => {
+  if (token) {
+    fetchApplications();
+  }
+}, [token, fetchApplications]);
+
   
   const navigation = useNavigation()
   
@@ -85,46 +106,55 @@ const ApplicationList = () => {
   
   
   const renderItem = ({ item }) => (
-    <View style={styles.row}>
-      {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
-        <View style={{flexDirection:"column", width:80, gap:40}}>
-        <TouchableOpacity onPress={()=>{ console.log(item.application_id);
-         navigation.navigate("Application",{application_id: item.application_id})}}>
-          <Text><AntDesign name="eyeo" size={24} color="#7367f0" /></Text>  </TouchableOpacity>
-        <TouchableOpacity>
-          <Text>
-          <AntDesign name="delete" size={24} color="#000" />
-          </Text>
-        </TouchableOpacity>
-        </View>
-      <Text style={[styles.cell, { width: 150 }]}>{item.application_id} <AntDesign name="bells" size={24} color="#000" /></Text>
-      <Text style={[styles.cell, { width: 150 }]}>{item.ageing}</Text>
-      <Text style={[styles.cell, { width: 150 }]}>{item.status_text}</Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.student.first_name} {item.student.last_name} {'\n'} {item.student.email}
-      </Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.university.name}
-        {'\n'}
-        {item.course.name}
-        {'\n'}
-        {item.intake.name}
-      </Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.application_officer?.name_with_email}
-      </Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.user?.parent?.email}
-      </Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.user?.company_name}
-        {'\n'}
-        {item.user?.email}
-      </Text>
-      <Text style={[styles.cell, { width: 150 }]}>
-        {item.created_at}
-      </Text>
-    </View>
+    (item?
+      
+    (<View style={styles.row}>
+    {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
+      <View style={{flexDirection:"column", width:80, gap:40}}>
+      <TouchableOpacity onPress={()=>{ console.log(item.application_id);
+       navigation.navigate("Application",{application_id: item.application_id})}}>
+        <Text><AntDesign name="eyeo" size={24} color="#7367f0" /></Text>  </TouchableOpacity>
+      <TouchableOpacity>
+        <Text>
+        <AntDesign name="delete" size={24} color="#000" />
+        </Text>
+      </TouchableOpacity>
+      </View>
+    <Text style={[styles.cell, { width: 150 }]}>{item.application_id} <AntDesign name="bells" size={24} color="#000" /></Text>
+    <Text style={[styles.cell, { width: 150 }]}>{item.ageing}</Text>
+    <Text style={[styles.cell, { width: 150 }]}>{item.status_text}</Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.student.first_name} {item.student.last_name} {'\n'} {item.student.email}
+    </Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.university.name}
+      {'\n'}
+      {item.course.name}
+      {'\n'}
+      {item.intake.name}
+    </Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.application_officer?.name_with_email}
+    </Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.user?.parent?.email}
+    </Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.user?.company_name}
+      {'\n'}
+      {item.user?.email}
+    </Text>
+    <Text style={[styles.cell, { width: 150 }]}>
+      {item.created_at}
+    </Text>
+  </View>)
+      :
+      (
+      <View>
+        <Text>No Data Available</Text>
+      </View>
+    )
+    )
   );
 
   const renderFooter = () => {
@@ -133,14 +163,28 @@ const ApplicationList = () => {
   };
 
   return (
-    <ScrollView horizontal={true} style={{ flexGrow: 0 }}>
-      {applications?.length === 0?
-      (
-        <LoagingScreen/>
-      )
-      :
-      (
+    <ScrollView >
       <View style={styles.container}>
+
+      <View style={{marginBottom:0, width:"100%", flexDirection:"row", justifyContent:"space-between", alignItems:"flex-start"}}>
+        <Searchbar placeholder='Search' style={{marginBottom:20, width:"80%", height:50, backgroundColor:"#a5a5ff", color:"white"}} inputStyle={{ color: 'white' }} placeholderTextColor="white" value={searchValue} onChangeText={setSearchvalue} />
+        <IconButton icon="filter" size={35} onPress={()=> setExpend(!expend)} iconColor="#a5a5ff" />
+      </View>
+        <List.Section style={{backgroundColor: 'transparent', width:"100%", padding:2, marginTop:0, width:"100%"}}>
+          <List.Accordion
+          expanded={expend}
+            style={{ backgroundColor: 'transparent', elevation: 0, shadowColor: 'transparent', padding: 0, margin: 0, height: 'auto', width:"100%"}}
+            right={props=> null}
+            theme={{ colors: { background: 'transparent' } }}
+          >
+            <View style={{width:"100%",justifyContent:"space-evenly", alignItems:"center"}}>
+            <StatusFilter/>
+            {/* <DateFilter/> */}
+          </View>
+          </List.Accordion>
+        </List.Section>
+        <ScrollView horizontal={true} style={{ width: '100%' }} contentContainerStyle={{ minWidth: 1000 }}>
+        <View style={{ flexDirection: 'column' }}>
         <View style={styles.header}>
           {/* Header cells (unchanged) */}
           <Text style={[styles.headerCell, { flex: 0.5 }]}>Actions</Text>
@@ -155,6 +199,12 @@ const ApplicationList = () => {
           <Text style={[styles.headerCell, { width: 150 }]}>Date Added</Text>
         </View>
 
+        {applications?.length === 0?
+        (
+          <LoagingScreen/>
+        )
+        :
+        (
         <FlatList
           data={applications}
           renderItem={renderItem}
@@ -165,8 +215,10 @@ const ApplicationList = () => {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
           }
-        />
-      </View>)}
+        />)}
+      </View>
+      </ScrollView>
+      </View>
     </ScrollView>
   );
 };
