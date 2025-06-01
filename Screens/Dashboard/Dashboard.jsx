@@ -434,10 +434,13 @@ const Dashboard = () => {
     headerRight: () => (
       <TouchableOpacity 
          
-        style={{ marginRight: 20, flexDirection: "row", justifyContent: "center", gap: 5 }}
+        style={{ marginRight: 20, flexDirection: "row", justifyContent: "center", gap: 5, alignItems:"center" }}
       >
         <AntDesign name="bells" size={24} color="#000" />
-        <Text onPress={() => navigation.navigate('Profile')} style={{ fontFamily: "Montserrat_400Regular" }}>{userName}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={{backgroundColor:"#E8E8F1CC", padding:10, borderWidth:1, borderRadius:100, borderColor:"#E8E8F1CC"}}>
+          <AntDesign name="user" size={24} color="#000" />
+        </TouchableOpacity>
+        {/* <Text onPress={() => navigation.navigate('Profile')} style={{ fontFamily: "Montserrat_400Regular" }}>{userName}</Text> */}
       </TouchableOpacity>
     )
   })}

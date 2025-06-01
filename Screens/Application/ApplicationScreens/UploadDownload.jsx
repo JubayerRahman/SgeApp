@@ -15,6 +15,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import * as DocumentPicker from 'expo-document-picker';
+import { List } from 'react-native-paper';
 
 const UploadDownload = ({data, setReload}) => {
   const documents = data?.student?.document;
@@ -166,20 +167,48 @@ const UploadDownload = ({data, setReload}) => {
   
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, height, padding:10 }}>
+    <View style={{width:"95%", marginLeft:"auto", marginRight:"auto" }}>
+    <List.Section
+    theme={{
+        colors:{background:"#EEEEFF"}
+      }}
+        style={{backgroundColor:"#EEEEFF", borderWidth:1, borderRadius:20, borderColor:"#EEEEFF", overflow:"hidden"}}
+    >
+    <List.Accordion
+          style={{backgroundColor:"#EEEEFF", borderWidth:1, borderColor:"#EEEEFF", overflow:"hidden"}}
+          title={
+            <View style={{backgroundColor:"#EEEEFF"}}>
+              <Text style={{color:"#0052FF", fontFamily:"Montserrat_700Bold",}}>Upload/Download</Text>
+            </View>
+          }
+          >
+    <GestureHandlerRootView style={{ flex: 1,  padding:10, backgroundColor:"#E8E8F1"}}>
      <Toast style={{zIndex: 100, position: 'absolute', top: 0, elevation:10}} />
-     <TouchableOpacity onPress={uploadFile} style={{alignItems:"center", justifyContent:"center", borderWidth:1, padding:40, borderColor:"#7367f0", borderRadius:20}}>
-        <AntDesign name="addfile" size={40} color="#7367f0"/>
-     </TouchableOpacity>
-     <TouchableOpacity onPress={DownloadWholeZip}>
-      <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"40%", marginBottom:20, marginLeft:"60%", textAlign:"center", marginTop:20 }}>Download All</Text>
+     <TouchableOpacity onPress={uploadFile} style={{alignItems:"center", justifyContent:"center", padding:5,}}>
+        <Text style={{ fontFamily:"Montserrat_700Bold", fontSize:16, padding:16, color:"#8083A3", fontWeight:"bold", width:"100%"}}>Please upload only color scan copy files</Text>
+        <View style={{backgroundColor:"white", width:"100%", padding:10, borderWidth:1, borderRadius:10, borderColor:"#ffff", flexDirection:"row", justifyContent:"space-between", marginBottom:10}}>
+          <Text style={{color:"#8083A3", fontSize:16, fontFamily:"Montserrat_400Regular",}}>Upload Photos</Text>
+          <AntDesign name="addfile" size={30} color="#8083A3"/>
+        </View>
+        <View style={{backgroundColor:"white", width:"100%", padding:10, borderWidth:1, borderRadius:10, borderColor:"#ffff", flexDirection:"row", justifyContent:"space-between", marginBottom:10}}>
+          <Text style={{color:"#8083A3", fontSize:16, fontFamily:"Montserrat_400Regular",}}>Upload Pdf/Doc.</Text>
+          <AntDesign name="addfile" size={30} color="#8083A3"/>
+        </View>
+        <View style={{backgroundColor:"white", width:"100%", padding:10, borderWidth:1, borderRadius:10, borderColor:"#ffff", flexDirection:"row", justifyContent:"space-between", marginBottom:10}}>
+          <Text style={{color:"#8083A3", fontSize:16, fontFamily:"Montserrat_400Regular",}}>Take Photos</Text>
+          <AntDesign name="addfile" size={30} color="#8083A3"/>
+        </View>
+        <Text style={{backgroundColor:"#0052FF", fontFamily:"Montserrat_700Bold", fontSize:16, padding:16, color:"white", fontWeight:"bold", borderWidth:1, borderRadius:20, borderColor:"#0052FF"}}>Upload Documents</Text>
      </TouchableOpacity>
      <FlatList
-     style={{marginBottom:70, zIndex:0}}
+        style={{marginBottom:0}}
         data={documentList}
         renderItem={RenderItems}
         keyExtractor={(item) => item.id.toString()}
       />
+      <TouchableOpacity onPress={DownloadWholeZip}>
+      <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"60%", marginBottom:20, marginLeft:"auto", marginRight:"auto", textAlign:"center" }}>Download All</Text>
+     </TouchableOpacity>
 
       <Modal
       animationType='fade'
@@ -282,6 +311,9 @@ const UploadDownload = ({data, setReload}) => {
         </BottomSheetModal>
       </BottomSheetModalProvider>
     </GestureHandlerRootView>
+    </List.Accordion>
+    </List.Section>
+    </View>
   );
 };
 

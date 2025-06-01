@@ -8,9 +8,11 @@ import { useNavigation } from '@react-navigation/native';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoagingScreen from '../components/LoagingScreen';
-import { IconButton, List, Searchbar } from 'react-native-paper';
+import { Divider, IconButton, List, Searchbar } from 'react-native-paper';
 import StatusFilter from '../components/StatusFilter';
 import DateFilter from '../components/DateFilter';
+import { Modal } from 'react-native';
+
 
 const { height } = Dimensions.get('window');
 
@@ -23,6 +25,9 @@ const ApplicationList = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [searchValue, setSearchvalue] = useState("")
   const [expend, setExpend] = useState(false)
+  const [students, setStudents] = useState()
+  const [modalView, setModalview] = useState(false)
+  
 
   
 
@@ -56,6 +61,7 @@ const ApplicationList = () => {
       
       
       const newApplications = response?.data?.data || [];
+      setStudents(response?.data?.total?.student_count)
       
       if (newApplications.length === 0) {
         setHasMore(false); // No more data to fetch 🛑
@@ -102,129 +108,197 @@ useEffect(() => {
     setLoading(false)
   };
 
-  console.log(refreshing);
   
-  
-  const renderItem = ({ item }) => (
-    (item?
-      
-    (<View style={styles.row}>
-    {/* <Text style={[styles.cell, { width: 80, flexDirection:"row", textAlign:"center" }]}> */}
-      <View style={{flexDirection:"column", width:80, gap:40}}>
-      <TouchableOpacity onPress={()=>{ console.log(item.application_id);
-       navigation.navigate("Application",{application_id: item.application_id})}}>
-        <Text><AntDesign name="eyeo" size={24} color="#7367f0" /></Text>  </TouchableOpacity>
-      <TouchableOpacity>
-        <Text>
-        <AntDesign name="delete" size={24} color="#000" />
-        </Text>
-      </TouchableOpacity>
-      </View>
-    <Text style={[styles.cell, { width: 150 }]}>{item.application_id} <AntDesign name="bells" size={24} color="#000" /></Text>
-    <Text style={[styles.cell, { width: 150 }]}>{item.ageing}</Text>
-    <Text style={[styles.cell, { width: 150 }]}>{item.status_text}</Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.student.first_name} {item.student.last_name} {'\n'} {item.student.email}
-    </Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.university.name}
-      {'\n'}
-      {item.course.name}
-      {'\n'}
-      {item.intake.name}
-    </Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.application_officer?.name_with_email}
-    </Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.user?.parent?.email}
-    </Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.user?.company_name}
-      {'\n'}
-      {item.user?.email}
-    </Text>
-    <Text style={[styles.cell, { width: 150 }]}>
-      {item.created_at}
-    </Text>
-  </View>)
-      :
-      (
-      <View>
-        <Text>No Data Available</Text>
-      </View>
-    )
-    )
-  );
 
-  const renderFooter = () => {
-    if (!loading) return null;
-    return <ActivityIndicator style={{ marginVertical: 20 }} size="large" color="#7367f0" />;
-  };
+const statusColors = {
+  'Application Processing': '#4CAF50',
+  'Application Submitted': '#2196F3',
+  'Pending Docs': '#FF9800',
+  'Offer Issue Conditional': '#9C27B0',
+  'Offer Issue Unconditional': '#F44336',
+  'Need Payment': '#3F51B5',
+  'CAS Issued': '#00BCD4',
+  'Additional Doc/info Needed': '#009688',
+  'Refund Required': '#FF5722',
+  'Application Rejected': '#795548',
+  'Case Closed': '#607D8B',
+  'Doc Received': '#E91E63',
+  'Partial Payment (number input)': '#673AB7',
+  'Offer Accepted by Student': '#8BC34A',
+  'Visa Application Initiated': '#FFC107',
+  'Visa Approved': '#CDDC39',
+  'Visa Rejected': '#FFEB3B',
+  'Visa Submitted': '#03A9F4',
+  'Student Rejected Offer': '#00ACC1',
+  'Admission Confirmed': '#43A047',
+  'Enrolled': '#E53935',
+  'Withdrawn': '#1E88E5',
+  'Deposit Paid': '#5E35B1',
+  'COE Received': '#D81B60',
+  'Passport Submitted': '#00897B',
+  'Biometric Done': '#FB8C00',
+  'Health Check Done': '#6D4C41',
+  'Ticket Booked': '#546E7A',
+  'Full Payment': '#7CB342',
+  'Awaiting Offer/Decision': '#C0CA33',
+  'Application Withdrawn': '#FFB300',
+  'Next Intake Recommended': '#039BE5',
+  'Enrollment Confirmed': '#D32F2F',
+  'Course Deferred': '#7B1FA2',
+  'Status 35': '#0097A7',
+};
+
+const handleScroll = ({ nativeEvent }) => {
+  const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+
+  const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+
+  if (isCloseToBottom && !loading && hasMore) {
+    fetchApplications(); // 🍭 Fetch more baby!
+  }
+};
+
+
 
   return (
-    <ScrollView >
-      <View style={styles.container}>
-
-      <View style={{marginBottom:0, width:"100%", flexDirection:"row", justifyContent:"space-between", alignItems:"flex-start"}}>
-        <Searchbar placeholder='Search' style={{marginBottom:20, width:"80%", height:50, backgroundColor:"#a5a5ff", color:"white"}} inputStyle={{ color: 'white' }} placeholderTextColor="white" value={searchValue} onChangeText={setSearchvalue} />
-        <IconButton icon="filter" size={35} onPress={()=> setExpend(!expend)} iconColor="#a5a5ff" />
-      </View>
-        <List.Section style={{backgroundColor: 'transparent', width:"100%", padding:2, marginTop:0, width:"100%"}}>
-          <List.Accordion
-          expanded={expend}
-            style={{ backgroundColor: 'transparent', elevation: 0, shadowColor: 'transparent', padding: 0, margin: 0, height: 'auto', width:"100%"}}
-            right={props=> null}
-            theme={{ colors: { background: 'transparent' } }}
-          >
-            <View style={{width:"100%",justifyContent:"space-evenly", alignItems:"center"}}>
-            <StatusFilter/>
-            {/* <DateFilter/> */}
-          </View>
-          </List.Accordion>
-        </List.Section>
-        <ScrollView horizontal={true} style={{ width: '100%' }} contentContainerStyle={{ minWidth: 1000 }}>
-        <View style={{ flexDirection: 'column' }}>
-        <View style={styles.header}>
-          {/* Header cells (unchanged) */}
-          <Text style={[styles.headerCell, { flex: 0.5 }]}>Actions</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Application ID</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Ageing(Days)</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Status</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Student Details</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>University/Course Details</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Application Officer</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Application Control Officer</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Channel Partner/Created By</Text>
-          <Text style={[styles.headerCell, { width: 150 }]}>Date Added</Text>
+    <View>
+      {applications.length === 0 ?
+      (<LoagingScreen/>)
+      :(
+       
+        <>
+         <View style={{
+        backgroundColor: '#0052FF',
+        padding: 15,
+        margin: 10,
+        borderRadius: 15,
+        borderColor: '#0052FF',
+        borderWidth: 1,
+        width:"60%",
+        marginLeft:"auto",
+        marginRight:"auto"
+      }}>
+        <Text style={{fontFamily: "Montserrat_700Bold",fontSize:25,fontWeight: 'bold',marginBottom: 5,color:"white"}}>Total Students</Text>
+        <Text style={{fontFamily: "Montserrat_400Regular", fontSize: 20,color: 'white'}}>
+          <AntDesign name="user" size={40} color="white" /> {students}
+        </Text>
         </View>
-
-        {applications?.length === 0?
-        (
-          <LoagingScreen/>
-        )
-        :
-        (
-        <FlatList
+        <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row"}}>
+          <Searchbar placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%"}}/>
+          <TouchableOpacity style={{position:"absolute", left:"85%", top:"40%"}} onPress={()=>setModalview(!modalView)}>
+            <AntDesign name="filter" size={30}/>
+          </TouchableOpacity>
+        </View>
+        <Modal visible={modalView} transparent={true} animationType='slide'>
+          <ScrollView style={{padding:20,marginTop:"17%", backgroundColor:"white", height:"95%", backgroundColor:"#f4f4f4"}}>
+            <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row"}}>
+          <Searchbar placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%", elevation:5}}/>
+          <TouchableOpacity style={{position:"absolute", left:"85%", top:"40%"}} onPress={()=>setModalview(!modalView)}>
+            <AntDesign name="filter" size={30}/>
+          </TouchableOpacity>
+        </View>
+            <StatusFilter/>
+            <DateFilter/>
+            <TouchableOpacity onPress={()=>setModalview(!modalView)}>
+              <Text style={{color:"#FFFFFF", fontFamily:"Montserrat_700Bold", fontSize:18, backgroundColor:"#0052FF", textAlign:"center", padding:20, borderRadius:40}}>Search</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </Modal>
+          <FlatList
           data={applications}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item.application_id?.toString() + index}
-          ListFooterComponent={renderFooter}
-          onEndReached={fetchApplications}
-          onEndReachedThreshold={0.5}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
-          }
-        />)}
-      </View>
-      </ScrollView>
-      </View>
-    </ScrollView>
+          keyExtractor={(item) => item.application_id.toString()}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          renderItem={({ item }) => (
+            <List.Section key={item.application_id} style={{ backgroundColor: 'transparent', borderRadius:20, borderWidth:1, overflow:"hidden", borderColor:"white"}}>
+      <List.Accordion
+        title={
+          <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"99%", padding:10, overflow:"hidden", paddingLeft:"auto", overflow:"hidden"}}>
+            <AntDesign name="bells" size={24} color="red" />
+            <View style={{width:"40%"}}>
+              <Text style={{fontFamily:"Montserrat_400Regular", fontWeight: 'bold' }}>{item.student.first_name} {item.student.last_name} </Text>
+            <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12 }}>{item.application_id}</Text>
+            </View>
+            <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12, width:"40%", 
+              color:statusColors[item.status_text], backgroundColor:`${statusColors[item.status_text]}33`, padding:10, textAlign:"center", borderRadius:20, borderWidth:1, borderColor:"transparent" }}>{item.status_text}</Text>
+          </View>
+        }
+        style={{ backgroundColor: 'transparent', borderWidth:1, borderRadius:20, borderColor:"white", alignItems:"center", justifyContent:"center", padding:10 }}
+        right={() => null}
+        contentStyle={{ overflow: "hidden" }}
+      >
+        <View style={{backgroundColor:"white", padding:10,}}>
+          <View class="studentDetails" style={{marginBottom:10}}>
+            <Text style={{color:"#8083A3", fontFamily:"'Montserrat_700Bold", fontSize:16, fontWeight:"bold"}}>Student Details:</Text>
+            <View>
+              <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
+                  <View style={{width:"45%" }}>
+                    <Text style={{fontFamily:"Montserrat_400Regular", fontWeight: 'bold', }}>{item.student.first_name} {item.student.last_name} </Text>
+                    <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12 }}>{item.application_id}</Text>
+                    <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12 }}>{item.student.email}</Text>
+                  </View>
+                <View style={{width:"45%", gap:10}}>
+                    <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 10,  
+                    color:statusColors[item.status_text], backgroundColor:`${statusColors[item.status_text]}33`, padding:10, textAlign:"center", borderRadius:20, borderWidth:1, borderColor:"transparent" }}>{item.status_text}</Text>
+                    <Text style={{fontFamily:"Montserrat_700Regular", color: 'Black', fontSize:10}}><Text style={{fontFamily:"Montserrat_700Bold"}}>Date added:</Text> {item.created_at}</Text>
+                  </View>
+              </View>
+            </View>
+          </View>
+          <Divider/>
+          <View class="University / Course:" style={{marginBottom:10}}>
+            <Text style={{color:"#8083A3", fontFamily:"'Montserrat_700Bold", fontSize:16, fontWeight:"bold"}}>University / Course:</Text>
+            <View>
+              <View style={{flexDirection:"column", justifyContent:"space-between", alignItems:"flex-start"}}>
+                  <View>
+                    <Text style={{fontFamily:"Montserrat_700Bold", fontWeight: 'bold', }}>{item.university?.name}</Text>
+                    <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12 }}>{item.course?.name}</Text>
+                    <Text style={{fontFamily:"Montserrat_400Regular", color: 'gray', fontSize: 12 }}>{item.intake?.name}</Text>
+                  </View>
+              </View>
+            </View>
+          </View>
+          <Divider/>
+          <View class="Application Control Officer:" style={{marginBottom:10}}>
+            <Text style={{color:"#8083A3", fontFamily:"'Montserrat_700Bold", fontSize:16, fontWeight:"bold"}}>Application Control Officer:</Text>
+            <View>
+              <View style={{flexDirection:"column", justifyContent:"space-between", alignItems:"flex-start"}}>
+                  <View>
+                    <Text style={{fontFamily:"Montserrat_700Bold", fontWeight: 'bold', }}>{item.application_control_officer?.email === undefined ?"No application officer assigned yet":(item.application_control_officer?.email)}</Text>
+                  </View>
+              </View>
+            </View>
+          </View>
+          <Divider/>
+          <View class="Channel partner / Created by:" style={{marginBottom:10}}>
+            <Text style={{color:"#8083A3", fontFamily:"'Montserrat_700Bold", fontSize:16, fontWeight:"bold"}}>Channel partner / Created by:</Text>
+            <View>
+              <View style={{flexDirection:"column", justifyContent:"space-between", alignItems:"flex-start"}}>
+                  <View>
+                    <Text style={{fontFamily:"Montserrat_400Regular", }}>{item.user?.company_name}</Text>
+                    <Text style={{fontFamily:"Montserrat_400Regular", }}>{item.user?.company_name_with_email}</Text>
+                  </View>
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity style={{alignItems:"center", paddingTop:30, paddingBottom:30}} onPress={()=>{ console.log(item.application_id);
+       navigation.navigate("Application",{application_id: item.application_id})}}>
+            <Text style={{backgroundColor:"#0052FF", padding:20, borderWidth:1, borderColor:"#0052FF", borderRadius:40,fontFamily:"Montserrat_700Bold", fontSize:16, color:"white"}}>View More Details</Text>
+          </TouchableOpacity>
+        </View>
+      </List.Accordion>
+      </List.Section>
+        )}
+          />
+        </>
+    )
+      }
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 16, overflow: 'scroll', flexGrow: 0, height:{height} },
+  container: { padding: 16, overflow: 'scroll', flexGrow: 0, height:{height}, marginBottom:5 },
   header: {
     flexDirection: 'row',
     backgroundColor: '#7367f0',

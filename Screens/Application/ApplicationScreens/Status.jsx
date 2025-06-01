@@ -10,6 +10,7 @@ import { Picker } from '@react-native-picker/picker';
 import { SelectList } from 'react-native-dropdown-select-list';
 import * as DocumentPicker from 'expo-document-picker';
 import LoagingScreen from '../../../components/LoagingScreen';
+import { List } from 'react-native-paper';
 
 const Status = ({applicationId}) => {
 
@@ -92,7 +93,7 @@ const Status = ({applicationId}) => {
   useEffect(()=>{
     FeatchingAllStatus()
     FeatchingFromAllStatus()
-  },[token])
+  },[token, applicationId])
 
   const statusList = formallStatus?.map(item => ({
   key: item.id.toString(),
@@ -140,26 +141,29 @@ const statusUpload = async () => {
   const RenderItem = ({item, index})=>{
     
     return(
-      <View style={{borderWidth:1, borderRadius:10, overflow:"hidden", marginBottom:10}}>
-        <Text style={{fontFamily:"Montserrat_700Bold", fontSize:18, padding:10}}>{item?.application_status?.name}{`\n`}
-          {index === 0 && (<Text style={{color:"red", fontSize: 16}}>(Current Status)</Text>)}
-        </Text>
-        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", marginTop:10, padding:10, backgroundColor:"#d3d3d3", gap:2}}>
-          <View style={{flexDirection:"row", gap:5, alignItems:"center", width:"45%",}}>
-            <AntDesign style={{color:"#7367f0"}} name="clockcircleo" size={20}/>
+      <View style={{width:"100%", marginLeft:"auto", marginRight:"auto", flexDirection:"row", justifyContent:"space-between", borderColor:"#ffff", borderBottomWidth:1,}}>
+        <View style={{flexDirection:"row", borderColor:"#ffff",borderLeftWidth:1, borderRightWidth:1, gap:5, alignItems:"center", width:"24%", padding:3}}>
             <Text style={{fontFamily:"Montserrat_400Regular", fontSize:12}}>{item?.created_at}</Text>
-          </View>
-          {item?.comment && (
-            <View style={{ flexDirection: "row", gap: 5, alignItems: "center", width: "25%", }}>
-              <Ionicons style={{ color: "#7367f0" }} name="chatbubble-ellipses-outline" size={20} />
+        </View>
+        <View style={{flexDirection:"row", borderColor:"#ffff", borderRightWidth:1, gap:5, alignItems:"center", width:"24%", padding:3}}>
+        {item?.comment && (
+            <View style={{ flexDirection: "row", gap: 5, alignItems: "center", }}>
               <Text style={{ fontFamily: "Montserrat_400Regular", fontSize: 12, width:"72%" }}>
                 {item.comment}
               </Text>
             </View>
           )}
-          {item?.document && (<TouchableOpacity onPress={()=>{ setDocumentModal(!documentModal), setDocumentURL(item?.document)}} style={{flexDirection:"row", gap:5, alignItems:"center", width:"30%"}}>
+          </View>
+      <View style={{lexDirection:"row", borderColor:"#ffff", borderRightWidth:1, gap:5, alignItems:"center", width:"24%", padding:3, width:"24%",}}>
+        <Text style={{fontFamily:"Montserrat_400Regular", fontSize:12, padding:10}}>{item?.application_status?.name}{`\n`}
+          {index === 0 && (<Text style={{color:"red", fontSize: 12}}>(Current Status)</Text>)}
+        </Text>
+        </View>
+        <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", padding:10, gap:2, width:"24%", borderColor:"#ffff", borderRightWidth:1,}}>
+          
+          {item?.document && (<TouchableOpacity onPress={()=>{ setDocumentModal(!documentModal), setDocumentURL(item?.document)}} style={{ gap:5, alignItems:"center",}}>
             <Ionicons style={{color:"#7367f0"}} name="document-attach-outline" size={20}/>
-            <Text style={{fontFamily:"Montserrat_400Regular", fontSize:12}}>Document</Text>
+            <Text style={{fontFamily:"Montserrat_400Regular", fontSize:9}}>Document</Text>
           </TouchableOpacity>)}
         </View>
       </View>
@@ -169,20 +173,42 @@ const statusUpload = async () => {
   
   return (
     <View>
-      {AllStatus.length === 0 ?
+      {AllStatus.length===0 ?
       <LoagingScreen/>
       : 
       (
-        <View style={{padding:10}}>
-      <TouchableOpacity onPress={()=>setFormMdal(!FormModal)}>
-            <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"70%", marginBottom:20, marginLeft:"30%", textAlign:"center" }}>Change Current Status</Text>
-           </TouchableOpacity>
+    <View style={{width:"95%", marginLeft:"auto", marginRight:"auto"}}>
+    <List.Section
+          theme={{
+              colors:{background:"#EEEEFF"}
+            }}
+              style={{backgroundColor:"#EEEEFF", borderWidth:1, borderRadius:20, borderColor:"#EEEEFF", overflow:"hidden"}}
+          >
+        <List.Accordion
+                style={{backgroundColor:"#EEEEFF", borderWidth:1, borderColor:"#EEEEFF", overflow:"hidden"}}
+                title={
+                  <View style={{backgroundColor:"#EEEEFF"}}>
+                    <Text style={{color:"#0052FF", fontFamily:"Montserrat_700Bold",}}>Status</Text>
+                  </View>
+                }
+                >
+        <View style={{padding:10, backgroundColor:"#E8E8F1"}}>
+          <View style={{flexDirection:"row", justifyContent:"space-between", borderColor:"#ffff", borderBottomWidth:1, borderTopWidth:1, alignItems:"center"}}>
+            <Text style={{height:"100%", width:"24%", fontSize:14, fontWeight:"bold", fontFamily:"Montserrat_700Bold", borderRightWidth:1, borderColor:"#ffff", padding:5, textAlign:"center", alignItems:"center", alignContent:"center", borderLeftWidth:1,}}>Date Added</Text>
+            <Text style={{height:"100%", width:"24%", fontSize:14, fontWeight:"bold", fontFamily:"Montserrat_700Bold", borderRightWidth:1, borderColor:"#ffff", padding:5, textAlign:"center", alignItems:"center", alignContent:"center"}}>comment</Text>
+            <Text style={{height:"100%", width:"24%", fontSize:14, fontWeight:"bold", fontFamily:"Montserrat_700Bold", borderRightWidth:1, borderColor:"#ffff", padding:5, textAlign:"center", alignItems:"center", alignContent:"center"}}>status & Document</Text>
+            <Text style={{height:"100%", width:"24%", fontSize:14, fontWeight:"bold", fontFamily:"Montserrat_700Bold", borderRightWidth:1, borderColor:"#ffff", padding:5, textAlign:"center", alignItems:"center", alignContent:"center"}}>Doc</Text>
+          </View>
         <FlatList
-          style={{marginBottom:120}}
+          style={{marginBottom:20}}
           data={AllStatus}
           renderItem={RenderItem}
           keyExtractor={(item) => item.id.toString()}
         />
+
+        <TouchableOpacity onPress={()=>setFormMdal(!FormModal)}>
+            <Text style={{color:"white", backgroundColor:"#7367f0", width:"100%", fontFamily: 'Montserrat_400Regular', fontSize:16, padding:10, borderColor:"#7367f0", borderWidth:2, borderRadius:10, width:"70%", marginBottom:20, marginLeft:"auto", marginRight:"auto", textAlign:"center" }}>Change Current Status</Text>
+      </TouchableOpacity>
 
         <Modal
           animationType='slide'
@@ -261,6 +287,9 @@ const statusUpload = async () => {
           </View>
           </View>
         </Modal>
+    </View>
+    </List.Accordion>
+    </List.Section>
     </View>
       )
       }

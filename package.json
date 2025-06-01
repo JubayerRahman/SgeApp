@@ -15,6 +15,7 @@
     "@expo/prebuild-config": "^8.2.0",
     "@gorhom/bottom-sheet": "^5.1.4",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-native-community/datetimepicker": "8.2.0",
     "@react-native-community/netinfo": "11.4.1",
     "@react-native-picker/picker": "2.9.0",
     "@react-navigation/drawer": "^7.3.9",
@@ -34,9 +35,11 @@
     "expo-splash-screen": "~0.29.24",
     "expo-status-bar": "~2.0.1",
     "jszip": "^3.10.1",
+    "lodash": "^4.17.21",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.9",
+    "react-native-calendars": "^1.1312.1",
     "react-native-date-picker": "^5.0.12",
     "react-native-dropdown-select-list": "^2.0.5",
     "react-native-gesture-handler": "~2.20.2",
@@ -54,8 +57,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "react-native-zip-archive": "^7.0.1",
-    "@react-native-community/datetimepicker": "8.2.0"
+    "react-native-zip-archive": "^7.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

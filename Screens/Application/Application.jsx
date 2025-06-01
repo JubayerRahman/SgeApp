@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useRoute } from '@react-navigation/native'
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -17,6 +17,7 @@ const Application = () => {
     const [activeTab, setActiveTabs] = useState('student');
     const [ApplicationData, setApplicationData] = useState([])
     const [Reload, setReload] = useState(false)
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -62,67 +63,23 @@ const Application = () => {
             setActiveTabs("student")
           }
         }, [token, application_id]);
+
+        useLayoutEffect(()=>{
+          navigation.setOptions({
+            title: ApplicationData?.student?.full_name ,
+          });
+        },[ApplicationData])
         
 
-        const TABS = [
-            { key: 'student', label: 'Student/Course Details' },
-            { key: 'university', label: 'University Details' },
-            { key: 'Upload/Download', label: 'Upload/Download' },
-            { key: 'Status', label: 'Status' },
-          ];
 
-          const renderContent = () => {
-            switch (activeTab) {
-              case 'student':
-                return <StudentCourseDetails data={ApplicationData} />;
-              case 'university':
-                return <UniversityDetails data={ApplicationData} />;
-              case 'Upload/Download':
-                return <UploadDownload data={ApplicationData} reload={Reload} setReload={setReload}/>;
-              case 'Status':
-                return <Status applicationId={application_id}/>;
-              default:
-                return <Text>No content</Text>;
-            }
-          };
     
-          // <ShimmerPlaceholder 
-          // width={220}
-          // height={100}
-          // shimmerColors={['#e0e0e0', '#f5f5f5', '#e0e0e0']}
-          // style={{borderRadius: 10}}/>
   return (
-    <View>
-    <Text style={{paddingTop:20, paddingLeft:10, fontFamily:"Montserrat_700Bold", fontSize:20}}>Application Details</Text>
-  <ScrollView horizontal style={{ padding: 10, margin: 5 }}>
-    {TABS.map(tab => (
-      <TouchableOpacity
-        key={tab.key}
-        style={{ paddingRight: 10 }}
-        onPress={() => setActiveTabs(tab.key)}
-      >
-        <Text
-          style={{
-            fontFamily: 'Montserrat_700Bold',
-            fontSize: 15,
-            color: activeTab === tab.key ? '#007AFF' : '#ccc',
-            borderColor: '#007AFF',
-            borderBottomWidth: activeTab === tab.key ? 2 : 0,
-            padding: 5,
-          }}
-        >
-          {tab.label}
-        </Text>
-        <View style={{ width: 20 }} />
-      </TouchableOpacity>
-    ))}
-  </ScrollView>
-
-
-      <ScrollView>
-        {renderContent()}
-      </ScrollView>
-    </View>
+    <ScrollView>
+      <StudentCourseDetails data={ApplicationData} />
+      <UniversityDetails data={ApplicationData} />
+      <UploadDownload data={ApplicationData} reload={Reload} setReload={setReload}/>
+      <Status applicationId={application_id}/>
+    </ScrollView>
   )
 }
 
