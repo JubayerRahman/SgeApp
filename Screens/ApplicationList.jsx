@@ -12,6 +12,13 @@ import { Divider, IconButton, List, Searchbar } from 'react-native-paper';
 import StatusFilter from '../components/StatusFilter';
 import DateFilter from '../components/DateFilter';
 import { Modal } from 'react-native';
+import UserFilter from '../components/UserFilter';
+import IntakeFilter from '../components/IntakeFilter';
+import UniversityFilter from '../components/UniversityFilter';
+import ApplicationControllOfficerFilter from '../components/ApplicationControllOfficerFilter';
+import ApplicationOfficerFilter from '../components/ApplicationOfficerFilter';
+import BranchFilter from '../components/BranchFilter';
+import AgeingFilter from '../components/AgeingFilter';
 
 
 const { height } = Dimensions.get('window');
@@ -27,6 +34,9 @@ const ApplicationList = () => {
   const [expend, setExpend] = useState(false)
   const [students, setStudents] = useState()
   const [modalView, setModalview] = useState(false)
+  const [selectedUser, setSelecteduser] = useState("")
+  const [selectedIntake, setSelectedIntake] = useState("")
+  const [selectedUniversity, setSelectedUniversity] = useState("")
   
 
   
@@ -50,7 +60,7 @@ const ApplicationList = () => {
     if (loading || !hasMore) return; // Prevent multiple calls 🔥
     setLoading(true);
     try {
-      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery=${searchValue}&sortBy&orderBy&status&university&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
+      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery=${searchValue}&sortBy&orderBy&status&university=${selectedUniversity}&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake=${selectedIntake}&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
@@ -81,7 +91,7 @@ const ApplicationList = () => {
     } finally {
       setLoading(false);
     }
-  }, [token, page, loading, hasMore, searchValue]);
+  }, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity]);
   
   useEffect(() => {
   if (token) {
@@ -89,7 +99,7 @@ const ApplicationList = () => {
     setPage(1);
     setHasMore(true);
   }
-}, [searchValue, token]);
+}, [searchValue, token, selectedIntake, selectedUniversity]);
 
 useEffect(() => {
   if (token) {
@@ -160,11 +170,10 @@ const handleScroll = ({ nativeEvent }) => {
 
 
 
+
   return (
     <View>
-      {applications.length === 0 ?
-      (<LoagingScreen/>)
-      :(
+     
        
         <>
          <View style={{
@@ -184,7 +193,7 @@ const handleScroll = ({ nativeEvent }) => {
         </Text>
         </View>
         <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row"}}>
-          <Searchbar placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%"}}/>
+          <Searchbar onChangeText={(text)=>setSearchvalue(text)} placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%"}}/>
           <TouchableOpacity style={{position:"absolute", left:"85%", top:"40%"}} onPress={()=>setModalview(!modalView)}>
             <AntDesign name="filter" size={30}/>
           </TouchableOpacity>
@@ -192,19 +201,30 @@ const handleScroll = ({ nativeEvent }) => {
         <Modal visible={modalView} transparent={true} animationType='slide'>
           <ScrollView style={{padding:20,marginTop:"17%", backgroundColor:"white", height:"95%", backgroundColor:"#f4f4f4"}}>
             <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row"}}>
-          <Searchbar placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%", elevation:5}}/>
+          <Searchbar onChangeText={(text)=>setSearchvalue(text)} placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%", elevation:5}}/>
           <TouchableOpacity style={{position:"absolute", left:"85%", top:"40%"}} onPress={()=>setModalview(!modalView)}>
             <AntDesign name="filter" size={30}/>
           </TouchableOpacity>
         </View>
+            <UserFilter setSelecteduser={setSelecteduser}/>
             <StatusFilter/>
+            <IntakeFilter setSelectedIntake={setSelectedIntake}/>
+            <UniversityFilter setSelectedUniversity={setSelectedUniversity}/>
+            <ApplicationControllOfficerFilter/>
+            <ApplicationOfficerFilter/>
             <DateFilter/>
-            <TouchableOpacity onPress={()=>setModalview(!modalView)}>
+            <BranchFilter/>
+            <AgeingFilter/>
+            <TouchableOpacity onPress={()=>setModalview(!modalView)} style={{marginBottom:50}}>
               <Text style={{color:"#FFFFFF", fontFamily:"Montserrat_700Bold", fontSize:18, backgroundColor:"#0052FF", textAlign:"center", padding:20, borderRadius:40}}>Search</Text>
             </TouchableOpacity>
           </ScrollView>
         </Modal>
+         {applications.length === 0 ?
+      (<LoagingScreen/>)
+      :(
           <FlatList
+          style={{padding:10, marginBottom:220}}
           data={applications}
           keyExtractor={(item) => item.application_id.toString()}
           refreshing={refreshing}
@@ -213,7 +233,7 @@ const handleScroll = ({ nativeEvent }) => {
             <List.Section key={item.application_id} style={{ backgroundColor: 'transparent', borderRadius:20, borderWidth:1, overflow:"hidden", borderColor:"white"}}>
       <List.Accordion
         title={
-          <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"99%", padding:10, overflow:"hidden", paddingLeft:"auto", overflow:"hidden"}}>
+          <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center", width:"99%", padding:10, margin:10, overflow:"hidden", paddingLeft:"auto", overflow:"hidden"}}>
             <AntDesign name="bells" size={24} color="red" />
             <View style={{width:"40%"}}>
               <Text style={{fontFamily:"Montserrat_400Regular", fontWeight: 'bold' }}>{item.student.first_name} {item.student.last_name} </Text>
@@ -290,9 +310,9 @@ const handleScroll = ({ nativeEvent }) => {
       </List.Section>
         )}
           />
+        )
+          }
         </>
-    )
-      }
     </View>
   );
 };

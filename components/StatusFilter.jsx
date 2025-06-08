@@ -51,7 +51,7 @@ const StatusFilter = () => {
     
   return (
     <View style={{width:"100%"}}>
-        <Text style={{fontSize: 16, fontFamily: 'Montserrat_700Bold'}}>Select Status:</Text>
+        <Text style={{fontSize: 16, fontFamily: 'Montserrat_700Bold'}}>Status:</Text>
       <View>
         <MultipleSelectList
           setSelected={(val)=>setSelectedStatus(val)}
