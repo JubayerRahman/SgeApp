@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SelectList } from 'react-native-dropdown-select-list';
 import axios from 'axios';
 
-const ApplicationOfficerFilter = () => {
+const ApplicationOfficerFilter = ({setselectedApplicationOfficer}) => {
 
     const [token, setToken] = useState('');
     const [ApplicationOfficerList, setApplicationOfficerList] = useState([])
@@ -44,7 +44,7 @@ const ApplicationOfficerFilter = () => {
 
      const OfficerObject = ApplicationOfficerList?.map(item => ({
     value: item.full_name,
-    label: item.full_name
+    key: item.id
     }));
 
     
@@ -53,10 +53,10 @@ const ApplicationOfficerFilter = () => {
     <View style={{marginBottom:10}}>
       <Text style={{fontSize: 16, fontFamily: 'Montserrat_700Bold', paddingBottom:10}}>Application Officer:</Text>
       <SelectList
-      setSelected={(val)=>setSelectedOfficer(val)}
+      setSelected={(val)=>setselectedApplicationOfficer(val)}
       data={OfficerObject}
       placeholder='Select Application Control Officer'
-      save='value'
+      // save='value'
       />
     </View>
   )

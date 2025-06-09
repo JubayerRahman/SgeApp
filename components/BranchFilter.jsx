@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SelectList } from 'react-native-dropdown-select-list';
 import axios from 'axios';
 
-const BranchFilter = () => {
+const BranchFilter = ({setselectedBranch}) => {
 
     const [token, setToken] = useState('');
     const [BranchList, setBranchList] = useState([])
@@ -44,7 +44,7 @@ const BranchFilter = () => {
 
      const BranchObject = BranchList?.map(item => ({
     value: item.name,
-    label: item.name
+    key: item.id
     }));
 
     
@@ -53,10 +53,10 @@ const BranchFilter = () => {
     <View style={{marginBottom:10}}>
       <Text style={{fontSize: 16, fontFamily: 'Montserrat_700Bold', paddingBottom:10}}>Branch:</Text>
       <SelectList
-      setSelected={(val)=>setSelectedBranch(val)}
+      setSelected={(val)=>setselectedBranch(val)}
       data={BranchObject}
       placeholder='Filter by Branch'
-      save='value'
+      // save='value'
       />
     </View>
   )

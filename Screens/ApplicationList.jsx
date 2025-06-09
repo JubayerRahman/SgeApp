@@ -37,6 +37,13 @@ const ApplicationList = () => {
   const [selectedUser, setSelecteduser] = useState("")
   const [selectedIntake, setSelectedIntake] = useState("")
   const [selectedUniversity, setSelectedUniversity] = useState("")
+  const [selectedApplicationControllOfficer, setselectedApplicationControllOfficer] = useState("")
+  const [selectedApplicationOfficer, setselectedApplicationOfficer] = useState("")
+  const [selectedFromDate, setselectedFromDate] = useState("")
+  const [selectedToDate, setselectedToDate] = useState("")
+  const [selectedBranch, setselectedBranch] = useState("")
+  const [selectedAgeing, setselectedAgeing] = useState("")
+  const [selectedStatus, setselectedStatus] = useState([])
   
 
   
@@ -60,13 +67,14 @@ const ApplicationList = () => {
     if (loading || !hasMore) return; // Prevent multiple calls 🔥
     setLoading(true);
     try {
-      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=10&searchQuery=${searchValue}&sortBy&orderBy&status&university=${selectedUniversity}&channelPartner&applicationOfficer&studentEmail&dateFrom&dateTo&currentTab=all&selectedUser&selectedIntake=${selectedIntake}&selectedBranch&selectedApplicationControlOfficer&selectedAgeing&studentId`, {
+      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=999999&searchQuery=${searchValue}&sortBy&orderBy&selectedStatus=${selectedStatus}&university=${selectedUniversity}&channelPartner&applicationOfficer=${selectedApplicationOfficer}&studentEmail&dateFrom=${selectedFromDate}&dateTo=${selectedToDate}&currentTab=all&selectedUser&selectedIntake=${selectedIntake}&selectedBranch=${selectedBranch}&selectedApplicationControlOfficer=${selectedApplicationControllOfficer}&selectedAgeing=${selectedAgeing}&studentId`, {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
       });
+      
 
       
       
@@ -74,11 +82,11 @@ const ApplicationList = () => {
       setStudents(response?.data?.total?.student_count)
       
       if (newApplications.length === 0) {
-        setHasMore(false); // No more data to fetch 🛑
+        setHasMore(false);
       } else {
-        if (searchValue) {
+        if (searchValue|| selectedIntake|| selectedUniversity || selectedApplicationControllOfficer || selectedApplicationOfficer || selectedFromDate || selectedToDate || selectedBranch || selectedAgeing || selectedStatus.length>0) {
           setApplications(newApplications)
-          console.log("search");
+          console.log(newApplications.length);
           
         }
         else{
@@ -91,7 +99,7 @@ const ApplicationList = () => {
     } finally {
       setLoading(false);
     }
-  }, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity]);
+  }, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity,selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
   
   useEffect(() => {
   if (token) {
@@ -99,7 +107,7 @@ const ApplicationList = () => {
     setPage(1);
     setHasMore(true);
   }
-}, [searchValue, token, selectedIntake, selectedUniversity]);
+}, [searchValue, token, selectedIntake, selectedUniversity, selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
 
 useEffect(() => {
   if (token) {
@@ -155,7 +163,7 @@ const statusColors = {
   'Next Intake Recommended': '#039BE5',
   'Enrollment Confirmed': '#D32F2F',
   'Course Deferred': '#7B1FA2',
-  'Status 35': '#0097A7',
+  'Course': '#0097A7',
 };
 
 const handleScroll = ({ nativeEvent }) => {
@@ -164,9 +172,27 @@ const handleScroll = ({ nativeEvent }) => {
   const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
 
   if (isCloseToBottom && !loading && hasMore) {
-    fetchApplications(); // 🍭 Fetch more baby!
+    fetchApplications();
   }
 };
+
+const ClearAllfinter = ()=>{
+  setSearchvalue("")
+  setSelecteduser("")
+  setSelectedIntake("")
+  setSelectedUniversity("")
+  setSelectedUniversity("")
+  setselectedApplicationControllOfficer("")
+  setselectedApplicationOfficer("")
+  setselectedFromDate("")
+  setselectedToDate("")
+  setselectedBranch("")
+  setselectedAgeing("")
+  setselectedStatus([])
+}
+
+console.log(selectedStatus.length>0);
+
 
 
 
@@ -192,11 +218,18 @@ const handleScroll = ({ nativeEvent }) => {
           <AntDesign name="user" size={40} color="white" /> {students}
         </Text>
         </View>
-        <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row"}}>
-          <Searchbar onChangeText={(text)=>setSearchvalue(text)} placeholder='Search Application' style={{backgroundColor:"#ffff", width:"100%"}}/>
-          <TouchableOpacity style={{position:"absolute", left:"85%", top:"40%"}} onPress={()=>setModalview(!modalView)}>
+        <View style={{paddingTop:10, paddingBottom:10, flexDirection:"row", paddingLeft:5, paddingRight:5}}>
+          <Searchbar onChangeText={(text)=>setSearchvalue(text)} placeholder='Search Application' value={searchValue} style={{backgroundColor:"#ffff", width:"100%",}}/>
+          <View style={{position:"absolute", left:"80%", right:"0%", top:"40%", justifyContent:"center", alignItems:"center", flexDirection:"row",  backgroundColor:"white", width:"21%", borderRadius:"100%"}}>
+            <TouchableOpacity  onPress={()=>setModalview(!modalView)}>
             <AntDesign name="filter" size={30}/>
           </TouchableOpacity>
+          {(searchValue || selectedIntake || selectedUniversity || selectedApplicationControllOfficer || selectedApplicationOfficer || selectedFromDate || selectedToDate || selectedBranch || selectedAgeing || selectedStatus.length>0) && (
+            <TouchableOpacity onPress={() => ClearAllfinter()}>
+              <AntDesign name="closecircleo" size={30} />
+            </TouchableOpacity>
+          )}
+          </View>
         </View>
         <Modal visible={modalView} transparent={true} animationType='slide'>
           <ScrollView style={{padding:20,marginTop:"17%", backgroundColor:"white", height:"95%", backgroundColor:"#f4f4f4"}}>
@@ -207,14 +240,14 @@ const handleScroll = ({ nativeEvent }) => {
           </TouchableOpacity>
         </View>
             <UserFilter setSelecteduser={setSelecteduser}/>
-            <StatusFilter/>
+            <StatusFilter setselectedStatus={setselectedStatus}/>
             <IntakeFilter setSelectedIntake={setSelectedIntake}/>
             <UniversityFilter setSelectedUniversity={setSelectedUniversity}/>
-            <ApplicationControllOfficerFilter/>
-            <ApplicationOfficerFilter/>
-            <DateFilter/>
-            <BranchFilter/>
-            <AgeingFilter/>
+            <ApplicationControllOfficerFilter setselectedApplicationControllOfficer={setselectedApplicationControllOfficer}/>
+            <ApplicationOfficerFilter setselectedApplicationOfficer={setselectedApplicationOfficer}/>
+            <DateFilter setselectedFromDate={setselectedFromDate} setselectedToDate={setselectedToDate}/>
+            <BranchFilter setselectedBranch={setselectedBranch}/>
+            <AgeingFilter setselectedAgeing={setselectedAgeing}/>
             <TouchableOpacity onPress={()=>setModalview(!modalView)} style={{marginBottom:50}}>
               <Text style={{color:"#FFFFFF", fontFamily:"Montserrat_700Bold", fontSize:18, backgroundColor:"#0052FF", textAlign:"center", padding:20, borderRadius:40}}>Search</Text>
             </TouchableOpacity>

@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { MultipleSelectList } from 'react-native-dropdown-select-list'
 
-const StatusFilter = () => {
+const StatusFilter = ({setselectedStatus}) => {
     const [token, setToken] = useState("")
     const [allStatus, setAllStatus] = useState([])
     const [selectedStatus, setSelectedStatus] = useState([])
@@ -46,7 +46,7 @@ const StatusFilter = () => {
 
     const multiSelectOptions = allStatus?.map(item => ({
   value: item.name,
-  label: item.name
+  key: item.id
 }));
     
   return (
@@ -54,9 +54,9 @@ const StatusFilter = () => {
         <Text style={{fontSize: 16, fontFamily: 'Montserrat_700Bold'}}>Status:</Text>
       <View>
         <MultipleSelectList
-          setSelected={(val)=>setSelectedStatus(val)}
+          setSelected={(val)=>setselectedStatus(val)}
           data={multiSelectOptions}
-          save='value'
+          // save='value'
           placeholder='Select status'
         />
       </View>

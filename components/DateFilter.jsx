@@ -2,11 +2,11 @@ import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import { View, Button, Platform, Text } from 'react-native';
 import React, { useState } from 'react';
 
-const DateFilter = () => {
+const DateFilter = ({setselectedFromDate, setselectedToDate}) => {
 
   const CurrentDate = new Date().toISOString().split('T')[0];
-  const [fromDate, setFromDate] = useState()
-  const [toDate, setToDate] = useState()
+  const [fromDate, setFromDate] = useState("Filter by from date")
+  const [toDate, setToDate] = useState("Filter by to date")
   const [fromDateView, setFormDateView] = useState("none")
   const [toDateView, setToDateView] = useState("none")
   
@@ -24,6 +24,7 @@ const DateFilter = () => {
         }}
         current={CurrentDate}
         onDayPress={day => {
+          setselectedFromDate(day.dateString)
           setFromDate(day.dateString)
           setFormDateView("none")
         }}
@@ -44,6 +45,7 @@ const DateFilter = () => {
         }}
         current={CurrentDate}
         onDayPress={day => {
+          setselectedToDate(day.dateString)
           setToDate(day.dateString)
           setToDateView("none")
         }}
