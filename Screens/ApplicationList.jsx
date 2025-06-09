@@ -63,51 +63,56 @@ const ApplicationList = () => {
     fetchToken();
   }, []);
 
-  const fetchApplications = useCallback(async () => {
-    if (loading || !hasMore) return; // Prevent multiple calls 🔥
-    setLoading(true);
-    try {
-      const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${page}&perPage=999999&searchQuery=${searchValue}&sortBy&orderBy&selectedStatus=${selectedStatus}&university=${selectedUniversity}&channelPartner&applicationOfficer=${selectedApplicationOfficer}&studentEmail&dateFrom=${selectedFromDate}&dateTo=${selectedToDate}&currentTab=all&selectedUser&selectedIntake=${selectedIntake}&selectedBranch=${selectedBranch}&selectedApplicationControlOfficer=${selectedApplicationControllOfficer}&selectedAgeing=${selectedAgeing}&studentId`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
-      
+  const fetchApplications = useCallback(async (reset = false) => {
+  if (loading || (!hasMore && !reset)) return;
 
-      
-      
-      const newApplications = response?.data?.data || [];
-      setStudents(response?.data?.total?.student_count)
-      
-      if (newApplications.length === 0) {
-        setHasMore(false);
-      } else {
-        if (searchValue|| selectedIntake|| selectedUniversity || selectedApplicationControllOfficer || selectedApplicationOfficer || selectedFromDate || selectedToDate || selectedBranch || selectedAgeing || selectedStatus.length>0) {
-          setApplications(newApplications)
-          console.log(newApplications.length);
-          
-        }
-        else{
-          setApplications(prevApps => [...prevApps, ...newApplications]);
-        }
-        setPage(prevPage => prevPage + 1);
-      }
-    } catch (error) {
-      console.error('Error fetching applications:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity,selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
-  
-  useEffect(() => {
-  if (token) {
+  if (reset) {
     setApplications([]);
     setPage(1);
     setHasMore(true);
   }
+
+  setLoading(true);
+  try {
+    const response = await axios.get(`https://dev.shabujglobal.org/api/application?id&page=${reset ? 1 : page}&perPage=10&searchQuery=${searchValue}&sortBy&orderBy&selectedStatus=${selectedStatus}&university=${selectedUniversity}&channelPartner&applicationOfficer=${selectedApplicationOfficer}&studentEmail&dateFrom=${selectedFromDate}&dateTo=${selectedToDate}&currentTab=all&selectedUser&selectedIntake=${selectedIntake}&selectedBranch=${selectedBranch}&selectedApplicationControlOfficer=${selectedApplicationControllOfficer}&selectedAgeing=${selectedAgeing}&studentId`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const newApplications = response?.data?.data || [];
+    setStudents(response?.data?.total?.student_count);
+
+    if (newApplications.length === 0) {
+      setHasMore(false);
+    } else {
+      setApplications(prev => reset ? newApplications : [...prev, ...newApplications]);
+      setPage(prev => reset ? 2 : prev + 1);
+    }
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+  } finally {
+    setLoading(false);
+  }
+}, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity, selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
+
+  
+  useEffect(() => {
+  // if (token) {
+    setApplications([]);
+    setPage(1);
+    setHasMore(true);
+    setStudents(0)
+    // }
+      onRefresh()
+      console.log("I am triggring");
+      
+    
+
 }, [searchValue, token, selectedIntake, selectedUniversity, selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
+
 
 useEffect(() => {
   if (token) {
@@ -121,7 +126,7 @@ useEffect(() => {
   const onRefresh = async () => {
     setRefreshing(true);
     setLoading(true)
-    await fetchApplications()
+    await fetchApplications(true)
     setRefreshing(false);
     setLoading(false)
   };
@@ -176,6 +181,10 @@ const handleScroll = ({ nativeEvent }) => {
   }
 };
 
+const SearchFunction= async()=>{
+  fetchApplications(true)
+}
+
 const ClearAllfinter = ()=>{
   setSearchvalue("")
   setSelecteduser("")
@@ -191,7 +200,7 @@ const ClearAllfinter = ()=>{
   setselectedStatus([])
 }
 
-console.log(selectedStatus.length>0);
+// console.log(applications.length);
 
 
 
@@ -248,7 +257,7 @@ console.log(selectedStatus.length>0);
             <DateFilter setselectedFromDate={setselectedFromDate} setselectedToDate={setselectedToDate}/>
             <BranchFilter setselectedBranch={setselectedBranch}/>
             <AgeingFilter setselectedAgeing={setselectedAgeing}/>
-            <TouchableOpacity onPress={()=>setModalview(!modalView)} style={{marginBottom:50}}>
+            <TouchableOpacity onPress={()=>{setModalview(!modalView), SearchFunction()}} style={{marginBottom:50}}>
               <Text style={{color:"#FFFFFF", fontFamily:"Montserrat_700Bold", fontSize:18, backgroundColor:"#0052FF", textAlign:"center", padding:20, borderRadius:40}}>Search</Text>
             </TouchableOpacity>
           </ScrollView>
