@@ -10,6 +10,7 @@ import UploadDownload from './ApplicationScreens/UploadDownload';
 import Status from './ApplicationScreens/Status';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
+import Comments from './ApplicationScreens/Comments';
 
 const Application = () => {
 
@@ -79,6 +80,7 @@ const Application = () => {
       <UniversityDetails data={ApplicationData} />
       <UploadDownload data={ApplicationData} reload={Reload} setReload={setReload}/>
       <Status applicationId={application_id}/>
+      <Comments applicationId={application_id}/>
     </ScrollView>
   )
 }
