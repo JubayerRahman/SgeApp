@@ -31,7 +31,6 @@ const Status = ({applicationId}) => {
       setFile(result)
     }
   }
-  console.log(newComment);
   
 
   useEffect(() => {

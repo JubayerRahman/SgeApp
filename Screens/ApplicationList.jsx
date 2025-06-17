@@ -96,7 +96,7 @@ const ApplicationList = () => {
   } finally {
     setLoading(false);
   }
-}, [token, page, loading, hasMore, searchValue, selectedIntake, selectedUniversity, selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
+}, [token, loading, hasMore, searchValue, selectedIntake, selectedUniversity, selectedApplicationControllOfficer, selectedApplicationOfficer, selectedFromDate, selectedToDate, selectedBranch, selectedAgeing, selectedStatus]);
 
   
   useEffect(() => {
@@ -120,7 +120,10 @@ useEffect(() => {
   }
 }, [token, fetchApplications]);
 
-  
+useEffect(()=>{
+  onRefresh()
+},[])
+
   const navigation = useNavigation()
   
   const onRefresh = async () => {
@@ -271,6 +274,8 @@ const ClearAllfinter = ()=>{
           keyExtractor={(item) => item.application_id.toString()}
           refreshing={refreshing}
           onRefresh={onRefresh}
+          onEndReachedThreshold={0.5}
+          onEndReached={fetchApplications}
           renderItem={({ item }) => (
             <List.Section key={item.application_id} style={{ backgroundColor: 'transparent', borderRadius:20, borderWidth:1, overflow:"hidden", borderColor:"white"}}>
       <List.Accordion

@@ -11,6 +11,8 @@ import Status from './ApplicationScreens/Status';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { LinearGradient } from 'expo-linear-gradient';
 import Comments from './ApplicationScreens/Comments';
+import UinversityCommunication from './ApplicationScreens/UinversityCommunication';
+import ChatWithApplicationOfficer from './ApplicationScreens/ChatWithApplicationOfficer';
 
 const Application = () => {
 
@@ -81,6 +83,8 @@ const Application = () => {
       <UploadDownload data={ApplicationData} reload={Reload} setReload={setReload}/>
       <Status applicationId={application_id}/>
       <Comments applicationId={application_id}/>
+      <UinversityCommunication applicationId={application_id}/>
+      <ChatWithApplicationOfficer applicationId={application_id} token={token}/>
     </ScrollView>
   )
 }
