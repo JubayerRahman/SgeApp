@@ -85,6 +85,7 @@ const Application = () => {
       <Comments applicationId={application_id}/>
       <UinversityCommunication applicationId={application_id}/>
       <ChatWithApplicationOfficer applicationId={application_id} token={token}/>
+      <View style={{height:100}}/>
     </ScrollView>
   )
 }
