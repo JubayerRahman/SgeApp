@@ -13,6 +13,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Comments from './ApplicationScreens/Comments';
 import UinversityCommunication from './ApplicationScreens/UinversityCommunication';
 import ChatWithApplicationOfficer from './ApplicationScreens/ChatWithApplicationOfficer';
+import AssignApplicationOfficer from './ApplicationScreens/AssignApplicationOfficer';
+import AssignComplianceOfficer from './AssignComplianceOfficer';
 
 const Application = () => {
 
@@ -85,6 +87,8 @@ const Application = () => {
       <Comments applicationId={application_id}/>
       <UinversityCommunication applicationId={application_id}/>
       <ChatWithApplicationOfficer applicationId={application_id} token={token}/>
+      <AssignApplicationOfficer applicationId={application_id} token={token}/>
+      <AssignComplianceOfficer applicationId={application_id} token={token} />
       <View style={{height:100}}/>
     </ScrollView>
   )
